@@ -8,6 +8,10 @@ const app = express();
 
 app.use(express.json({ limit: '1mb' }));
 
+app.get('/', (req, res) => {
+  res.status(200).send('Ultra Aircon Chatbot is running 🚀');
+});
+
 app.get('/health', (req, res) => {
   res.status(200).json({
     ok: true,
