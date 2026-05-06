@@ -1,0 +1,350 @@
+BƯỚC 1 — Chốt luồng realtime chuẩn trước khi làm
+
+Trước khi sửa code, anh phải hiểu đúng luồng.
+Luồng chuẩn của mình sẽ là:
+
+Luồng đúng
+Technician app lấy GPS hiện tại
+Technician app gọi API update location lên backend
+Backend lưu DB
+Backend emit socket event
+Admin dashboard đang mở /global_map nhận event
+Marker technician trên map nhảy sang vị trí mới
+Tại sao chọn luồng này?
+
+Vì đây là luồng ổn định nhất cho production phase hiện tại:
+
+mobile chỉ cần tin backend
+admin không đọc trực tiếp từ mobile
+DB luôn có source of truth
+socket chỉ là lớp broadcast realtime
+Event nên thống nhất
+
+Anh nên chốt 1 event duy nhất, ví dụ:
+
+technician_location_updated
+
+Payload tối thiểu:
+
+{
+  "technicianId": 1,
+  "userId": 2,
+  "lat": 10.762622,
+  "lng": 106.660172,
+  "updatedAt": "2026-04-23T15:30:00.000Z"
+}
+Kết quả mong muốn sau Phase realtime
+bấm “Lấy vị trí” trên mobile → có lat/lng
+bấm “Update ngay” → backend log PUT /api/technicians/location/:id -> 200
+admin /global_map đang mở → marker đổi ngay, không cần F5
+BƯỚC 2 — Test backend socket đang sống thật
+
+Trước khi làm live tracking liên tục, phải xác nhận socket backend đang hoạt động.
+
+Anh cần làm
+
+Mở 3 thứ:
+
+backend terminal
+admin dashboard ở /global_map
+technician app
+Kỳ vọng backend
+
+Khi admin map mở, backend phải có log kiểu:
+
+client connected
+socket connected
+namespace connected
+
+Nếu backend không có log connect socket thì realtime chưa thể chạy.
+
+Kỳ vọng admin map
+
+Ở /global_map, UI nên hiện kiểu:
+
+Socket: Connected
+
+Nếu đang hiện connected như ảnh trước của anh thì bước này coi như pass.
+
+Chốt bước 2
+
+Nếu /global_map đã hiện Socket: Connected
+👉 coi như backend socket sống thật
+👉 qua bước 3.
+
+BƯỚC 3 — Test mobile gửi location 1 lần thật
+
+Đây là bước quan trọng nhất trước khi bật live tracking liên tục.
+
+Mục tiêu bước này
+
+Từ technician app:
+
+lấy vị trí thật
+gửi lên backend đúng 1 lần
+backend lưu đúng
+admin map nhìn thấy vị trí mới
+Cách làm chuẩn
+3.1 Mở technician app → vào Tracking
+
+Trên app technician:
+
+mở dashboard
+vào màn Tracking
+3.2 Bấm “Lấy vị trí”
+
+Kỳ vọng:
+
+hiện lat/lng thật
+không còn -
+không lỗi permission
+
+Nếu lỗi permission thì chưa qua bước này.
+
+3.3 Bấm “Update ngay”
+
+Kỳ vọng backend log có:
+
+PUT /api/technicians/location/1 -> 200
+
+hoặc endpoint tương đương anh đang dùng.
+
+3.4 Quan sát admin /global_map
+
+Marker phải:
+
+đổi vị trí
+panel detail đổi lat/lng
+updatedAt đổi theo
+
+Nếu hiện ngay mà không cần refresh thủ công:
+👉 realtime một bước đã hoạt động.
+
+Nếu bước 3 fail thì debug theo thứ tự này
+Fail A — mobile không lấy được vị trí
+
+Check:
+
+AndroidManifest đã có permission
+emulator đã cấp quyền location
+emulator có mock location hoặc vị trí thiết bị
+geolocator đang trả Position thật
+Fail B — lấy được vị trí nhưng update API fail
+
+Check:
+
+token attach header
+endpoint đúng
+technicianId đúng
+body đúng field backend yêu cầu
+
+Ví dụ field phải thống nhất:
+
+{
+  "lat": 37.421998,
+  "lng": -122.084000
+}
+
+hoặc nếu backend dùng:
+
+{
+  "latitude": 37.421998,
+  "longitude": -122.084000
+}
+
+Anh phải thống nhất tuyệt đối.
+
+Fail C — backend 200 nhưng admin map không đổi
+
+Check:
+
+backend có emit socket sau khi update DB không
+admin có lắng nghe đúng event name không
+admin đang update state local khi nhận event không
+BƯỚC 4 — Chốt realtime admin map
+
+Sau khi update 1 lần hoạt động, anh phải đảm bảo admin map update đúng state.
+
+Logic đúng trên admin
+
+Admin /global_map cần có 2 nguồn dữ liệu:
+
+1. Initial fetch
+
+Khi mở trang:
+
+gọi API danh sách technician locations
+2. Socket update
+
+Khi nhận event mới:
+
+merge vào state hiện tại
+update marker theo technicianId
+Pseudo-code đúng
+socket.on('technician_location_updated', (payload) => {
+  setTechnicians((prev) =>
+    prev.map((item) =>
+      item.technicianId === payload.technicianId
+        ? {
+            ...item,
+            lat: payload.lat,
+            lng: payload.lng,
+            updatedAt: payload.updatedAt,
+            online: true,
+          }
+        : item
+    )
+  )
+})
+
+Nếu technician chưa có trong list thì add mới.
+
+Kỳ vọng của bước 4
+
+Tại admin map:
+
+marker không mất
+không duplicate marker
+click vào marker vẫn ra đúng technician
+panel detail đổi theo vị trí mới
+BƯỚC 5 — Nâng từ “Update ngay” lên “Bật live tracking”
+
+Chỉ làm bước này khi bước 3 và 4 đã pass.
+
+Mục tiêu
+
+Khi technician bấm:
+
+Bật live tracking
+
+app sẽ:
+
+mỗi vài giây lấy vị trí
+gọi update location
+backend emit socket
+admin map chạy realtime liên tục
+Chiến lược production-safe cho Phase 5
+
+Đừng stream quá dày.
+Phase này chỉ cần:
+
+mỗi 5–10 giây
+hoặc chỉ gửi khi vị trí đổi đủ lớn
+
+Khuyên dùng ban đầu:
+
+interval: 5 giây
+distanceFilter: 10–20m
+Luồng mobile chuẩn
+Khi bấm “Bật live tracking”
+set isTracking = true
+start stream vị trí
+Khi bấm “Tắt live tracking”
+cancel stream
+set isTracking = false
+Pseudo-code Flutter
+_positionSubscription = Geolocator.getPositionStream(
+  locationSettings: const LocationSettings(
+    accuracy: LocationAccuracy.high,
+    distanceFilter: 10,
+  ),
+).listen((position) async {
+  await apiService.updateTechnicianLocation(
+    technicianId: technicianId,
+    lat: position.latitude,
+    lng: position.longitude,
+  );
+});
+Lưu ý production
+
+Không gọi API nếu:
+
+chưa login
+technicianId null
+app đã logout
+token hết hạn chưa recover
+BƯỚC 6 — Cleanup production sau khi realtime chạy
+
+Sau khi realtime đã chạy thật, phải dọn các điểm này:
+
+6.1 Tránh spam API
+
+Thêm guard:
+
+chỉ gửi khi lat/lng đổi thật
+debounce/throttle nhẹ
+
+Ví dụ:
+
+bỏ qua nếu chênh lệch < 5m
+6.2 Tránh memory leak
+
+Khi rời Tracking screen:
+
+cancel position stream
+@override
+void dispose() {
+  _positionSubscription?.cancel();
+  super.dispose();
+}
+6.3 Tránh socket duplicate ở admin
+
+Khi unmount page:
+
+socket.off(...)
+socket.disconnect() nếu cần theo kiến trúc hiện tại
+6.4 UX đúng khi session expire
+
+Nếu đang live tracking mà auth chết:
+
+stop tracking
+clear token
+về login
+Thứ tự anh phải làm NGAY, không nhảy bước
+Phase 5 realtime execution order
+Bước A
+
+Xác nhận:
+
+admin /global_map đang socket connected
+Bước B
+
+Từ mobile tracking:
+
+bấm Lấy vị trí
+bấm Update ngay
+Bước C
+
+Quan sát:
+
+backend có PUT /technicians/location/... -> 200
+admin map marker đổi ngay
+Bước D
+
+Chỉ khi C pass:
+
+mới bật Bật live tracking
+Giờ mình làm đúng từng bước, bắt đầu với Bước A
+Anh cần làm ngay
+
+Chỉ làm đúng phần này trước:
+
+mở backend
+mở admin ở /global_map
+
+xác nhận trên UI có:
+
+Socket: Connected
+mở technician app → vào Tracking
+bấm:
+Lấy vị trí
+Update ngay
+chụp cho em:
+backend log
+admin /global_map
+tracking screen sau khi update
+
+Khi anh gửi 3 ảnh đó, em sẽ chốt ngay cho anh:
+
+pass hay fail ở bước realtime 1-shot
+rồi hướng dẫn tiếp bước bật live tracking liên tục.

@@ -1,0 +1,15 @@
+Bước tiếp theo hợp lý nhất
+
+Để giữ đúng tiến độ Phase 5, em khuyên chốt như sau:
+
+xác nhận Phase 5 realtime movement DONE
+ghi note rõ:
+movement hiện tại là GPS-stream test
+chưa snap-to-road
+để phần:
+route theo đường thật
+polyline
+ETA
+vào phase sau
+
+Nếu anh muốn, em sẽ viết ngay cho anh một đoạn “Biên bản chốt Phase 5” thật gọn, rõ cái gì DONE và cái gì deferred.

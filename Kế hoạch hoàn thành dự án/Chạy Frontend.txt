@@ -1,0 +1,30 @@
+Chạy frontent apps/admin dastboad
+
+cd D:\Dev\ultra-aircon-startup\apps\admin-dashboard
+
+Remove-Item -Recurse -Force .next
+pnpm build
+pnpm start
+
+Lệnh xem token
+
+localStorage
+
+
+
+
+Nếu anh muốn làm tiếp đúng Phase 4
+
+Em đề xuất bước tiếp theo (rất quan trọng):
+
+1. Fix interceptor auto refresh token
+2. Cho phép tracking update không cần auth (DEV only)
+3. Animate marker (smooth movement)
+
+Anh muốn em làm tiếp cái nào:
+
+🔁 Auto refresh token chuẩn production
+🎯 Cho admin update tracking (dev mode)
+🎬 Marker animation (mượt như Grab)
+
+Chọn 1 cái, em làm full code cho anh.

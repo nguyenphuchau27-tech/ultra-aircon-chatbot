@@ -1,0 +1,187 @@
+Lênh trong VS code or Powshel:
+===========
+1.Xuất cấu 
+===========
+cd D:\Dev\ultra-aircon-startup
+tree /F /A > PROJECT_STRUCTURE.txt
+===========================================
+Lệnh cập nhật cho Scripts PROJECT_BRAIN.md
+===========================================
+
+cd D:\Dev\ultra-aircon-startup
+node scripts/generate-project-brain.ts
+
+--------------------------------
+Lệnh load lại window của VS code
+--------------------------------
+
+Ctrl + Shift + P
+TypeScript: Restart TS Server
+
+Ctrl + Shift + P
+Developer: Reload Window
+
+================
+Lệnh chạy DOCKER
+================
+Bước 1: Restart sạch WSL
+
+Mở PowerShell Run as Administrator:
+
+wsl --shutdown
+
+Sau đó mở lại Docker Desktop.
+
+Nếu chưa lên, chạy tiếp:
+
+wsl --update
+wsl --status
+Bước 2: Kill sạch process Docker rồi mở lại
+
+Trong PowerShell hoặc CMD:
+
+taskkill /F /IM "Docker Desktop.exe"
+taskkill /F /IM "com.docker.backend.exe"
+taskkill /F /IM "com.docker.service"
+
+Xóa toàn bộ rác Docker
+docker system prune -a --volumes
+
+Reset toàn bộ (chỉ khi thật cần)
+docker compose down -v
+docker compose up 
+
+Restart sạch (khi có thay đổi code) ưu tiên
+docker compose down
+docker compose up 
+
+Chạy lại sạch
+
+Ở root project D:\Dev\ultra-aircon-startup, chạy lần lượt
+taskkill /F /IM node.exe
+rd /s /q node_modules
+rd /s /q backend\node_modules
+rd /s /q apps\admin-dashboard\node_modules
+del pnpm-lock.yaml
+==============
+lỆNH chạy DATA
+==============
+
+docker exec -it ultra-aircon-postgres psql -U postgres -d 
+----------------------------
+Lệnh kiểm tra tk trong data
+----------------------------
+SELECT id, name, email, role, status FROM users;
+
+=================
+LỆNH chạy BACKEND
+=================
+
+cd D:\Dev\ultra-aircon-startup
+cd backend
+pnpm run build
+pnpm run start
+
+=================================
+Chạy frontent apps/admin dastboad
+=================================
+
+cd D:\Dev\ultra-aircon-startup\apps\admin-dashboard
+Remove-Item -Recurse -Force .next
+pnpm build
+pnpm start
+
+
+===============================
+Lệnh chạy app TECHNICIAN futter
+===============================
+cd D:\Dev\ultra-aircon-startup\apps\technician-app
+flutter clean
+flutter pub get
+flutter analyze
+flutter run
+
+TK login
+-------------------
+ admin@example.com 
+ 12345678
+-------------------
+
+===============================
+Lệnh chạy app CUSTOMER futter
+===============================
+cd D:\Dev\ultra-aircon-startup
+cd apps/customer-app
+flutter pub get
+flutter run
+====================================
+Thoát TECHNICIAN để vào customer-app
+====================================
+D:\Dev\ultra-aircon-startup\apps\customer-app>
+
+adb disconnect
+adb kill-server
+adb start-server
+adb devices
+
+Khi thấy trả về 
+
+emulator-5554    device
+
+chạy 
+flutter run -d emulator-5554
+
+xon, nếu chưa tạo ustomer-app
+chạy
+
+cd apps
+flutter create customer-app
+
+hoặc 
+
+flutter create --project-name customer_app customer-app
+
+rồi chạy:
+
+cd D:\Dev\ultra-aircon-startup\apps\customer-app>
+
+flutter clean
+flutter pub get
+flutter run -d emulator-5554
+
+TK login
+--------------------
+test@example.com
+12345678
+--------------------
+
+Lệnh kiểm tra khi không login được:
+
+cd D:\Dev\ultra-aircon-startup\apps\customer-app
+findstr /S /I /N "Authentication required" lib\*.dart
+
+Lệnh clear sạch
+
+Remove-Item -Recurse -Force build
+Remove-Item -Recurse -Force .dart_tool
+
+Remove-Item -Recurse -Force build -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force .dart_tool -ErrorAction SilentlyContinue
+
+
+====================
+Lệnh chạy chat bot
+====================
+
+cd D:\Dev\ultra-aircon-startup\chatbot
+
+Lệnh chạy Ngrok
+
+cd C:\ngrok
+
+.\ngrok.exe http 5000
+
+
+
+
+

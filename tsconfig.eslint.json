@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "apps/**/*.ts",
+    "apps/**/*.tsx",
+    "backend/**/*.ts",
+    "packages/**/*.ts",
+    "shared/**/*.ts"
+  ]
+}

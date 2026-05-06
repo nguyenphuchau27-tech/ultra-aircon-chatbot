@@ -1,0 +1,1032 @@
+code_full.zip
+Lưu trữ Zip
+structure.zip
+Lưu trữ Zip
+Dự án của anh là app chạy trên đa nền tảng: app, zalo, facebok, web, anh là người mới code nhờ Chatgpt viết em hãy đọc thật kỹ sâu toàn bộ cấu trúc và code, nhớ toàn bộ để hướng dẫn anh hoàn chỉnh dự án hoàn hảo nhất nhé!
+Project Audit Notes
+
+Đang phân tích dự án đã upload để lập bản đồ cấu trúc, luồng chạy, rủi ro và kế hoạch hoàn thiện production.
+
+Sẽ đọc toàn bộ mã nguồn ở mức hệ thống, nhưng để làm việc hiệu quả và chính xác, mọi kết luận sẽ được ghi theo từng lớp: tổng quan, kiến trúc, module, runtime, bug risk, build/deploy.
+
+Đã suy nghĩ trong 4m 29s
+🔍 Phân tích
+
+Bảo Ngọc, em đã đọc kỹ 2 file anh upload:
+
+structure.zip → chứa toàn bộ cây thư mục
+code_full.zip → chứa dump code dạng text
+
+Em nói thẳng để anh nắm đúng tình hình:
+
+Em đã hiểu được gì về dự án của anh
+
+Dự án này đang đi theo hướng multi-platform platform cho hệ sinh thái điều hòa/aircon, gồm nhiều kênh:
+
+Web admin
+Mobile app
+Technician app
+Zalo bot
+Facebook bot
+AI platform / AI orchestration
+Backend domain modules (theo structure)
+Có dấu hiệu đang đi theo kiểu monorepo
+
+Từ cây thư mục, em thấy kiến trúc tổng thể đang chia thành các khối lớn:
+
+A. Khối app client
+apps/admin-dashboard
+apps/customer-app
+apps/mobile-app
+apps/technician-app
+B. Khối backend
+backend/modules/auth
+backend/modules/orders
+backend/modules/payments
+backend/modules/users
+backend/modules/technicians
+backend/modules/franchise
+backend/modules/analytics
+backend/modules/cache
+backend/modules/database
+backend/modules/queue
+C. Khối AI platform
+ai-platform/ai-core
+ai-platform/ai-orchestrator
+ai-platform/diagnostic-ai
+ai-platform/dispatch-ai
+ai-platform/fraud-ai
+ai-platform/growth-ai
+ai-platform/marketing-ai
+ai-platform/prediction-ai
+ai-platform/pricing-ai
+ai-platform/support-ai
+D. Kênh tích hợp chat/platform
+
+Trong support-ai có:
+
+facebook/bot.js
+zalo/bot.js
+
+Tức là định hướng sản phẩm của anh là một hệ thống dịch vụ điều hòa đa kênh, có:
+
+khách hàng
+kỹ thuật viên
+admin
+AI support/dispatch/prediction
+chatbot qua Facebook/Zalo
+Nhưng em phải nói thật một điểm rất quan trọng
+
+Mặc dù structure cho thấy dự án rất lớn, nhưng code dump hiện tại không chứa đầy đủ source của toàn bộ hệ thống.
+
+Cụ thể:
+
+Em đọc được source rõ nhất ở:
+
+apps/admin-dashboard
+một phần ai-platform/*
+pubspec.yaml của mobile-app và technician-app
+Nhưng em chưa có đầy đủ code của:
+backend/*
+apps/customer-app/*
+source Dart trong apps/mobile-app/lib/*
+source Dart trong apps/technician-app/lib/*
+
+Nói cách khác:
+
+Em đã hiểu được khung hệ thống và một phần code thật, nhưng hiện tại chưa thể nói là đã đọc toàn bộ code thật của mọi module vì file dump anh upload chưa chứa đủ toàn bộ source ứng dụng.
+
+Điểm này em phải nói rõ để anh không bị hiểu nhầm.
+
+Những gì em đọc sâu được ngay bây giờ
+1) apps/admin-dashboard là phần web admin hiện có code rõ nhất
+
+Em thấy đây là một app Next.js + React + TypeScript.
+
+package.json
+
+Các dependency chính:
+
+next
+react
+axios
+chart.js
+socket.io-client
+@react-google-maps/api
+test dùng vitest, testing-library
+
+Điều này cho thấy admin dashboard đang hướng tới:
+
+dashboard quản trị
+analytics
+realtime/status
+bản đồ
+giám sát hệ thống
+2) Cấu trúc admin-dashboard hiện tại còn khá sơ khai
+
+Các page hiện có kiểu:
+
+dashboard.tsx
+users.tsx
+orders.tsx
+technicians.tsx
+analytics.tsx
+ai_os.tsx
+ai_control.tsx
+digital_twin.tsx
+global.tsx
+platform_monitor.tsx
+system_ai.tsx
+system_control.tsx
+meta_platform.tsx
+command_center.tsx
+universe.tsx
+
+Tên file cho thấy anh đang muốn xây một dashboard rất lớn, nhưng code em đọc được cho thấy phần nhiều đang ở mức:
+
+page tĩnh
+gọi API cơ bản
+hiển thị đơn giản
+chưa có layout chuẩn
+chưa có domain model rõ
+chưa thấy auth guard
+chưa thấy error boundary
+chưa thấy typed API layer hoàn chỉnh
+chưa thấy state management bài bản
+chưa thấy form/validation chuẩn production
+3) Service API phía admin khá mỏng
+
+Trong src/services/api.ts, em thấy:
+
+tạo axios.create(...)
+baseURL lấy từ NEXT_PUBLIC_API_BASE_URL || http://localhost:3000/api
+có wrapper getUsers, getTechnicians, getOrders
+
+Điều này nói lên:
+
+frontend đang phụ thuộc vào backend REST API
+mới có layer giao tiếp API rất mỏng
+chưa có:
+auth token strategy rõ ràng
+refresh token flow
+centralized query management
+retry policy
+observability
+API schema validation
+4) UI đang bị duplication và thiếu chuẩn hóa
+
+Em thấy có dấu hiệu duplicate:
+
+src/components/Sidebar.tsx
+src/components/components/Sidebar.tsx
+src/services/api.ts
+src/services/services/api.ts
+
+Đây là mùi kiến trúc xấu rất đáng chú ý.
+
+Nó cho thấy 1 trong các khả năng:
+
+code được generate nhiều lần bởi AI
+copy/paste sai
+refactor dở dang
+thiếu kiểm soát folder structure
+
+Nếu không xử lý sớm thì sau này sẽ sinh:
+
+import sai file
+sửa 1 nơi không có tác dụng
+bug khó trace
+test fail không ổn định
+developer mới rất khó hiểu codebase
+5) Test hiện có nhưng mới ở mức rất cơ bản
+
+Em thấy test như:
+
+api.test.ts
+ai_control.test.tsx
+digital_twin.test.tsx
+global.test.tsx
+
+Điểm tốt:
+
+đã có tư duy viết test
+
+Điểm chưa tốt:
+
+phần lớn là test rendering / mocked API
+chưa thấy:
+integration test thật
+API contract test
+end-to-end flow
+auth flow test
+regression test cho business flow chính
+6) Khối AI platform hiện tại thiên về khung hơn là production
+
+Em đã đọc các file như:
+
+ai-platform/ai-core/main.py
+ai-platform/ai-orchestrator/services/ai_orchestrator.py
+ai-platform/support-ai/main.py
+ai-platform/support-ai/facebook/bot.js
+ai-platform/support-ai/zalo/bot.js
+
+Đánh giá thật:
+
+a) ai_orchestrator.py
+
+Hiện tại logic chỉ kiểu:
+
+nếu request type là repair → dispatch technician
+nếu energy → optimize energy
+còn lại → monitor
+
+Tức là mới ở mức:
+
+rule-based stub
+chưa phải orchestrator thật
+b) facebook/bot.js, zalo/bot.js
+
+Hiện đang:
+
+expose webhook
+đọc message
+console.log
+trả 200
+
+Tức là:
+
+chưa có verify signature
+chưa có auth
+chưa có command routing
+chưa có persistence
+chưa có message processor
+chưa có queue
+chưa có retry
+chưa có session/context
+chưa có NLP/LLM pipeline thật
+c) Một số file Python có dấu hiệu template generated / chưa chạy production
+
+Ví dụ support-ai/main.py có dấu hiệu docstring không chuẩn, nhìn như code auto-generate, rất có thể còn lỗi syntax hoặc chưa hoàn thiện.
+
+=> Kết luận: khối AI hiện tại là concept skeleton, chưa phải hệ thống AI production-ready.
+
+7) Mobile app và technician app hiện tại em chưa có source business thật
+
+Em chỉ đọc được pubspec.yaml, thấy stack Flutter với:
+
+http
+socket_io_client
+google_maps_flutter
+geolocator
+provider
+
+Điều này cho thấy định hướng app:
+
+gọi API
+realtime socket
+định vị GPS
+bản đồ
+state management bằng Provider
+
+Nhưng vì không có lib/ source thật trong dump code, nên hiện tại em chưa thể audit logic mobile.
+
+Kết luận kỹ thuật hiện tại của em
+
+Dự án của anh không phải app nhỏ. Nó là một hệ thống platform nhiều phần:
+
+web admin
+mobile
+technician mobile
+chatbot channels
+backend modules
+AI modules
+
+Nhưng trạng thái code hiện tại cho thấy rất rõ:
+
+Dự án đang ở trạng thái:
+ý tưởng lớn
+phạm vi rất rộng
+nhiều module đã được dựng khung
+một phần code còn mang tính demo / scaffold / AI-generated
+chưa đồng nhất về kiến trúc
+chưa production-ready
+
+Nói dễ hiểu hơn:
+
+Dự án của anh hiện tại là một “bộ khung tham vọng lớn”, nhưng chưa phải một codebase trưởng thành đồng bộ để có thể build production ngay mà không qua giai đoạn chuẩn hóa rất mạnh.
+
+🏗️ Kiến trúc
+
+Nếu em là mentor kỹ thuật trực tiếp của anh, em sẽ không cho anh tiếp tục “đắp thêm tính năng” ngay.
+
+Em sẽ đi theo kiến trúc xử lý này:
+
+Giai đoạn 1 — Chốt lại bản đồ hệ thống
+
+Ta phải chia hệ thống thành 5 khối độc lập:
+
+Khối 1: Core business platform
+Users
+Orders
+Technicians
+Payments
+Franchise
+Analytics
+Khối 2: Client apps
+Admin dashboard
+Customer app
+Technician app
+Khối 3: Realtime / communication
+socket
+notification
+webhook
+chat integrations
+Khối 4: AI services
+support ai
+diagnostic ai
+dispatch ai
+prediction ai
+pricing ai
+Khối 5: Deployment / ops
+docker
+CI/CD
+env
+monitoring
+logging
+health check
+Kiến trúc production em khuyên
+
+Thay vì để mọi thứ “nửa web, nửa bot, nửa AI, nửa dashboard”, ta cần chuẩn hóa theo kiểu này:
+
+1. Backend là trung tâm
+
+Tất cả client và bot đều đi qua backend/API gateway.
+
+Các kênh:
+
+Web
+Mobile
+Technician app
+Facebook
+Zalo
+
+đều không được tự xử lý business lung tung.
+
+Chúng chỉ nên:
+
+nhận input
+gọi backend
+hiển thị output
+2. AI service là service riêng
+
+AI không nhét lung tung vào app.
+
+Tách:
+
+AI orchestration
+inference
+training
+recommendation
+chatbot processor
+3. Frontend chỉ là presentation + interaction
+
+Admin dashboard phải có:
+
+layout
+auth
+route protection
+API layer
+query cache
+UI kit
+feature modules
+4. Mobile/technician app theo feature-first
+
+Ví dụ:
+
+auth
+orders
+location
+tracking
+notifications
+profile
+5. Tất cả phải có contract rõ
+API contract
+DTO
+validation
+error model
+event schema
+Kiến trúc target em đề xuất cho anh
+monorepo/
+  apps/
+    admin-dashboard
+    customer-web
+    mobile-app
+    technician-app
+
+  services/
+    api-gateway
+    auth-service
+    order-service
+    technician-service
+    payment-service
+    notification-service
+    ai-orchestrator
+    support-bot-service
+
+  packages/
+    ui
+    types
+    config
+    utils
+    api-client
+
+  infra/
+    docker
+    nginx
+    monitoring
+    ci-cd
+
+  docs/
+    architecture
+    api-spec
+    deployment
+
+Nếu backend hiện tại là NestJS hoặc Node modular backend thì vẫn dùng được, nhưng cần chuẩn hóa module boundaries.
+
+💻 Code đầy đủ
+
+Hiện tại em chưa viết lại code ngay, vì bước đúng phải là audit trước, sửa sau.
+
+Nhưng em đưa luôn cho anh bản đồ chất lượng hiện tại để mình xử lý có thứ tự:
+
+A. Các vấn đề kỹ thuật em đã phát hiện
+1) Code duplication
+Sidebar.tsx bị duplicate
+api.ts bị duplicate
+có dấu hiệu folder lồng bất thường
+2) UI pages đang rời rạc
+mỗi page tự fetch riêng
+thiếu layout architecture
+thiếu module composition
+3) AI modules đang là skeleton
+logic đơn giản
+webhook bot quá sơ khai
+chưa có orchestration thật
+4) Thiếu backend source trong dump
+không thể verify endpoint thật
+không thể verify auth flow
+không thể verify DB/model
+không thể verify payment/order lifecycle
+5) Mobile source chưa đủ
+chỉ có dependency manifest
+chưa có business logic
+B. Em đã “nhớ” gì để đồng hành với anh trong cuộc chat này
+
+Trong cuộc trò chuyện này, em đã map được:
+
+Hệ thống gồm:
+admin-dashboard
+customer-app
+mobile-app
+technician-app
+backend modules
+ai-platform
+support bots facebook/zalo
+Các domain chính:
+users
+technicians
+orders
+payments
+franchise
+analytics
+support
+AI orchestration
+prediction
+pricing
+fraud
+dispatch
+Chất lượng code hiện thấy:
+admin-dashboard: có code thật nhưng sơ khai
+ai-platform: khung nhiều hơn logic production
+mobile/technician: chưa đủ source
+backend: có structure nhưng dump code chưa đủ
+
+Em có thể dùng chính map này để tiếp tục dẫn anh ở các bước sau.
+
+C. Em nói thật về chuyện “nhớ toàn bộ”
+
+Em có thể:
+
+giữ bản đồ dự án
+giữ ngữ cảnh làm việc
+tiếp tục audit theo từng module
+đồng hành xuyên suốt trong cuộc hội thoại này rất tốt
+
+Nhưng em không nên nói sai với anh rằng em đã “đọc và nhớ vĩnh viễn toàn bộ 100% code thật” khi dữ liệu upload hiện tại chưa đủ full source.
+
+Điều đúng là:
+
+Em đã đọc sâu phần cấu trúc tổng thể và phần source hiện có, đã lập được bản đồ kỹ thuật của dự án, và sẵn sàng đồng hành để chuẩn hóa dần toàn bộ hệ thống.
+
+🧪 Cách test / chạy
+
+Với tình trạng hiện tại, em khuyên test theo 3 lớp, không làm loạn:
+
+Lớp 1 — Xác minh từng app chạy được
+Admin dashboard
+
+Mục tiêu:
+
+cài dependency
+chạy local
+test page render
+test API baseURL
+test routes
+
+Các lệnh dự kiến:
+
+cd apps/admin-dashboard
+npm install
+npm run dev
+npm run test
+npm run type-check
+npm run build
+Mobile app
+cd apps/mobile-app
+flutter pub get
+flutter analyze
+flutter test
+flutter run
+Technician app
+cd apps/technician-app
+flutter pub get
+flutter analyze
+flutter test
+flutter run
+Lớp 2 — Xác minh tích hợp với backend
+
+Cần test:
+
+/users
+/orders
+/technicians
+auth
+websocket
+maps/location flows
+
+Nhưng bước này hiện chưa làm chuẩn được nếu anh chưa đưa source backend thật.
+
+Lớp 3 — Xác minh bot/webhook
+Facebook bot
+verify webhook route
+verify payload parsing
+signature check
+logging
+Zalo bot
+verify webhook route
+verify auth/secret
+parsing
+response flow
+
+Hiện tại 2 bot mới chỉ ở mức “nhận request và log”.
+
+Kiểm tra build readiness hiện tại
+
+Nếu đánh giá nhanh:
+
+admin-dashboard: có khả năng build được sau khi dọn duplicate/import/env
+AI modules: chưa tin tưởng build/run production
+mobile/technician: chưa kết luận vì thiếu source thật
+backend: chưa kết luận vì thiếu code dump
+⚡ Tối ưu
+
+Đây là hướng em đề xuất để biến dự án này từ “khung lớn” thành “sản phẩm chạy thật”.
+
+Ưu tiên số 1: Thu gọn phạm vi
+
+Không làm toàn bộ cùng lúc.
+
+Chốt trước MVP production đầu tiên:
+
+Admin dashboard
+Backend core
+Order flow
+Technician flow
+1 kênh chatbot
+1 mobile app
+
+Đừng cố production hết AI/fraud/prediction/pricing cùng lúc.
+
+Ưu tiên số 2: Audit đúng thứ tự
+
+Thứ tự em khuyên:
+
+Phase A — Chuẩn hóa repo
+bỏ node_modules, dist, build khỏi source dump
+chuẩn hóa workspace
+chốt package manager
+chốt monorepo rules
+Phase B — Audit backend
+entry point
+module graph
+entities
+DB
+auth
+order lifecycle
+payment flow
+technician assignment
+Phase C — Audit admin dashboard
+routing
+layout
+API client
+auth
+shared components
+query/data fetching
+test
+build
+Phase D — Audit mobile apps
+feature modules
+API integration
+realtime
+location
+error handling
+offline/retry
+Phase E — Audit bot + AI
+webhook security
+orchestration
+message routing
+logging
+observability
+queue
+Ưu tiên số 3: Đưa về production architecture
+
+Bất cứ phần nào không phục vụ MVP thì tạm freeze.
+Tập trung làm chắc:
+
+auth
+order
+technician
+payment
+admin monitoring
+1 chatbot flow
+Việc em muốn làm tiếp ngay cho anh
+
+Bước tiếp theo tốt nhất là:
+
+Anh upload tiếp đúng 4 phần này:
+backend/src hoặc toàn bộ backend source thật
+apps/customer-app source
+apps/mobile-app/lib
+apps/technician-app/lib
+
+và nếu được, upload theo dạng sạch:
+
+bỏ node_modules
+bỏ dist
+bỏ build
+bỏ .next
+bỏ .dart_tool
+
+Khi có 4 phần đó, em sẽ làm cho anh tiếp bản sau:
+
+bản đồ toàn bộ kiến trúc
+luồng dữ liệu end-to-end
+module nào đang hỏng
+cần refactor gì
+cách chạy local đầy đủ
+thứ tự sửa bug
+kế hoạch build thành app thật
+
+Hiện tại, với dữ liệu anh đã gửi, em đã hoàn thành bước đọc sâu và dựng bản đồ kỹ thuật ban đầu của dự án.
+Tin nhắn tiếp theo anh gửi source backend/mobile/customer-app, em sẽ bắt đầu đi vào audit từng module như một senior engineer thực thụ.
+
+backend.zip
+Lưu trữ Zip
+technician-app lib.zip
+Lưu trữ Zip
+mobile-app lib.zip
+Lưu trữ Zip
+apps_structure.txt
+Tài liệu
+backend_structure.txt
+Tài liệu
+admin-dashboard.zip
+Lưu trữ Zip
+customer-app của anh hiện tại chưa có code!
+Đã suy nghĩ
+Đã suy nghĩ trong 1m 30s
+🔍 Phân tích
+
+Rõ rồi anh. Vậy hiện tại mình chốt lại như sau:
+
+customer-app chưa có code → đây không phải lỗi, mà là một phần chưa được implement.
+Hiện tại hệ thống của anh thực tế đang có 4 khối chính để mình tập trung:
+admin-dashboard
+backend
+mobile-app
+technician-app
+
+Từ cấu trúc anh gửi, thư mục apps đúng là đang có admin-dashboard, customer-app, mobile-app, technician-app; trong đó customer-app mới chỉ tồn tại ở mức cấu trúc repo chứ chưa có business code hoàn chỉnh.
+
+Còn phía backend, dự án đã có một khung khá rõ theo kiểu NestJS modular monolith, gồm các module chính như:
+
+auth
+users
+orders
+technicians
+payments
+realtime
+notifications
+analytics
+dispatch
+maps
+reviews
+và cả source TypeScript lẫn bản build dist.
+
+Ngoài ra, em đã đọc được phần source mới anh upload và xác nhận thêm:
+
+Backend hiện tại
+
+Backend là NestJS + TypeORM + PostgreSQL.
+main.ts đã có:
+
+helmet
+compression
+global prefix /api
+CORS
+validation pipe
+rate limit
+request logging
+performance interceptor
+
+Tức là phần backend đã có hướng production tốt hơn so với những gì em thấy ban đầu.
+
+Mobile app hiện tại
+
+mobile-app/lib hiện rất nhỏ, mới ở mức:
+
+main.dart
+api.dart
+
+Nội dung hiện tại cho thấy:
+
+app Flutter chỉ mới boot vào LoginScreen
+route /home đang là placeholder
+API client chỉ gọi GET http://localhost/orders
+
+=> Nghĩa là mobile app mới là skeleton, chưa phải app business hoàn chỉnh.
+
+Technician app hiện tại
+
+technician-app/lib hiện tại gần như giống y hệt mobile-app:
+
+cùng main.dart
+cùng api.dart
+cùng pattern placeholder
+
+=> Tức là technician-app cũng đang ở mức khung rất sớm, chưa có luồng kỹ thuật viên thật.
+
+Kết luận rất quan trọng
+
+Hiện tại dự án của anh không phải thiếu một chút, mà đang ở trạng thái:
+
+backend có khung tương đối rõ
+admin-dashboard có code nhiều nhất ở phía client
+mobile-app và technician-app mới là bản khởi tạo
+customer-app chưa bắt đầu
+
+Nói thẳng theo kiểu mentor:
+
+Muốn đưa dự án này thành app dùng thật, mình không nên làm theo hướng “vá từng lỗi lẻ”.
+Mình phải đi theo hướng chốt MVP → chuẩn hóa backend → hoàn thiện 1 app khách → hoàn thiện 1 app kỹ thuật viên → rồi mới mở rộng đa nền tảng.
+
+🏗️ Kiến trúc
+
+Với trạng thái hiện tại, em đề xuất kiến trúc triển khai thực tế như này:
+
+Phase 1 — Chốt MVP thật
+
+Đừng làm cả 4 app cùng lúc.
+
+MVP nên là:
+Backend
+Admin dashboard
+Mobile app cho khách
+Technician app
+customer-app web để sau
+
+Lý do:
+
+mobile-app và technician-app đang là khung
+customer-app chưa có code
+nếu dàn trải thêm web khách lúc này sẽ loãng lực
+Phase 2 — Backend làm trung tâm
+
+Tất cả phải xoay quanh backend.
+
+Backend chịu trách nhiệm:
+auth
+user
+order
+technician assignment
+tracking
+payment
+notification
+Client app chỉ nên:
+login
+gọi API
+render UI
+nhận realtime event
+
+Không để business logic nằm lung tung trong Flutter hoặc dashboard.
+
+Phase 3 — Tách rõ 3 sản phẩm
+1. Admin dashboard
+
+Dành cho:
+
+quản trị user
+quản trị order
+quản trị technician
+analytics
+monitoring
+2. Mobile app
+
+Dành cho khách hàng:
+
+đăng ký/đăng nhập
+tạo yêu cầu sửa máy lạnh
+xem trạng thái đơn
+theo dõi kỹ thuật viên
+thanh toán
+đánh giá
+3. Technician app
+
+Dành cho thợ:
+
+đăng nhập
+nhận đơn
+cập nhật vị trí
+cập nhật trạng thái công việc
+xem lịch sử đơn
+thu tiền / xác nhận hoàn tất
+4. Customer web app
+
+Tạm thời để backlog, chỉ làm sau khi mobile flow ổn.
+
+💻 Code đầy đủ
+
+Hiện tại chưa phải lúc viết thêm code mới cho customer-app.
+
+Cái đúng bây giờ là chốt roadmap kỹ thuật:
+
+Việc cần làm ngay
+A. Backend
+kiểm tra src/main.ts
+kiểm tra src/app.module.ts
+đọc lần lượt:
+auth
+users
+orders
+technicians
+payments
+realtime
+B. Mobile app
+đọc login_screen.dart
+xác định còn thiếu:
+auth service
+models
+order screens
+tracking screens
+state management
+env/config
+error handling
+C. Technician app
+đọc login_screen.dart
+xác định còn thiếu:
+technician order list
+accept/reject job
+tracking update
+status update
+earnings/history
+D. Customer-app
+chưa code thì chưa build
+chưa test
+chưa fix
+chưa nên bàn sâu implementation ngay
+Bản đồ ưu tiên em chốt cho anh
+Ưu tiên 1
+
+Hoàn thiện backend core:
+
+auth
+users
+orders
+technicians
+payments
+realtime tracking
+Ưu tiên 2
+
+Hoàn thiện mobile-app cho khách:
+
+login
+tạo đơn
+xem đơn
+tracking
+Ưu tiên 3
+
+Hoàn thiện technician-app:
+
+login
+nhận đơn
+cập nhật vị trí
+cập nhật trạng thái
+Ưu tiên 4
+
+Dọn admin-dashboard để quản trị được thật
+
+Ưu tiên 5
+
+Mới bắt đầu customer-app
+
+🧪 Cách test / chạy
+
+Với tình hình hiện tại, mình nên test theo thứ tự này:
+
+A. Test backend trước
+cd backend
+npm install
+npm run type-check
+npm run test
+npm run build
+npm run start:dev
+
+Sau đó test các API chính:
+
+POST /api/auth/login
+POST /api/auth/register
+GET /api/users
+GET /api/orders
+POST /api/orders
+GET /api/technicians
+PATCH /api/technicians/...
+health endpoint
+B. Test mobile-app
+cd apps/mobile-app
+flutter pub get
+flutter analyze
+flutter test
+flutter run
+
+Nhưng trước khi chạy thật, cần sửa ngay 1 điểm:
+
+http://localhost trong Flutter không ổn cho emulator/device thật
+Chuẩn đúng:
+Android emulator: 10.0.2.2
+iOS simulator: có thể dùng localhost
+device thật: dùng IP LAN hoặc domain backend
+C. Test technician-app
+cd apps/technician-app
+flutter pub get
+flutter analyze
+flutter test
+flutter run
+D. Customer-app
+
+Hiện tại:
+
+không có code
+nên không test
+không build
+không cần debug lúc này
+⚡ Tối ưu
+
+Đây là quyết định kỹ thuật em khuyên anh chốt luôn:
+
+Không làm customer-app ngay
+
+Vì:
+
+chưa có source
+chưa có feature spec rõ
+backend/mobile/technician còn chưa hoàn thiện
+Hướng tốt nhất:
+Sprint 1
+backend chạy ổn
+auth/order/technician flow chạy được
+Sprint 2
+mobile-app khách chạy được end-to-end
+Sprint 3
+technician-app chạy được end-to-end
+Sprint 4
+admin-dashboard quản trị được thật
+Sprint 5
+mới tạo customer-app
+
+Hiện tại kết luận chuẩn là:
+
+customer-app chưa có code nên mình sẽ đưa nó ra khỏi phạm vi debug hiện tại.
+Từ giờ em sẽ tập trung cùng anh vào backend + mobile-app + technician-app + admin-dashboard để dựng MVP chạy thật.
+
+Tin nhắn tiếp theo, anh gửi cho em module backend anh muốn em audit trước:
+auth, orders, technicians, hay payments.

@@ -1,0 +1,27 @@
+name: Deploy Startup
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install
+
+        run: |
+          npm install
+
+      - name: Build Docker
+
+        run: |
+          docker-compose build
+
+      - name: Run
+
+        run: |
+          docker-compose up -d

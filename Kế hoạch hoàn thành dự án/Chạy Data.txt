@@ -1,0 +1,6 @@
+
+docker exec -it ultra-aircon-postgres psql -U postgres -d aircon_startup
+
+SELECT id, email, role, status FROM users;
+
+SELECT id, email, role, status FROM users WHERE role = 'technician';

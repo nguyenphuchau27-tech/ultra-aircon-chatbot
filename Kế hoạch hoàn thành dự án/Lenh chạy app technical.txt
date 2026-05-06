@@ -1,0 +1,61 @@
+Lệnh chạy app futter
+
+cd D:\Dev\ultra-aircon-startup\apps\technician-app
+flutter clean
+flutter pub get
+flutter analyze
+flutter run
+
+Android SDK Location = D:\Dev\Sdk\Android
+
+Test 
+Dùng account trong DB:
+
+Từ DB của anh trước đó:
+
+37.422500
+-122.083200
+
+
+admin@example.com
+test@example.com (technician)
+
+👉 Dùng:
+
+email: test@example.com
+password: (password anh đã set)
+
+
+Invoke-RestMethod -Method POST http://localhost:3002/api/auth/login `
+  -ContentType "application/json" `
+  -Body '{"email":"admin@example.com","password":"12345678"}'
+
+
+flutter clean
+flutter pub get
+flutter run -d emulator-5554
+
+kill app flutter
+
+flutter uninstall
+flutter run
+
+chạy data
+
+docker exec -it ultra-aircon-postgres psql -U postgres -d aircon_startup
+
+{
+  "email": "tech@example.com",
+  "password": "12345678"
+}
+
+{
+  "email": "admin@example.com",
+  "password": "12345678"
+}
+
+Chạy frontent apps/admin dastboad
+
+Remove-Item -Recurse -Force .next
+pnpm build
+pnpm start

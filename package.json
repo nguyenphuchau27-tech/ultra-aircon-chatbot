@@ -1,0 +1,41 @@
+{
+  "name": "ultra-aircon-platform",
+  "version": "1.0.0",
+  "description": "AI-driven Air Conditioning service platform monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "workspaces": [
+    "apps/*",
+    "backend"
+  ],
+  "scripts": {
+    "setup": "./scripts/setup.sh",
+    "build": "turbo run build --parallel",
+    "build:full": "turbo run build --parallel --force",
+    "dev": "turbo run dev --parallel",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "type-check": "turbo run type-check",
+    "format": "prettier --write \"**/*.{ts,js,json,md,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md,yaml}\"",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "deploy": "./scripts/deploy.sh",
+    "brain:generate": "pnpm exec ts-node --transpile-only scripts/generate-project-brain.ts"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.30",
+    "eslint": "9",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "prettier": "^3.0.0",
+    "ts-node": "10.9.2",
+    "turbo": "^2.0.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.58.1"
+  },
+  "dependencies": {
+    "@react-leaflet/core": "^3.0.0"
+  }
+}

@@ -1,0 +1,418 @@
+Bạn là một chuyên gia product manager + UX/UI designer + senior developer.
+Hãy thiết kế và mô tả chi tiết một ứng dụng mobile (Android/iOS) dành cho KHÁCH HÀNG đặt dịch vụ kỹ thuật (điện lạnh, điện nước, sửa chữa...), tương tự mô hình marketplace như Vua Thợ.
+Yêu cầu:
+- Viết bằng tiếng Việt
+- Chi tiết đầy đủ từ UI/UX → chức năng → luồng người dùng → database → API → logic → gợi ý code
+- Tối ưu để dễ dùng, tăng tỷ lệ chốt đơn, và giữ chân khách hàng
+----------------------------------
+PHẦN 1: TỔNG QUAN APP
+- Mục tiêu ứng dụng
+- Đối tượng người dùng
+- Vấn đề cần giải quyết
+- Giá trị cốt lõi
+----------------------------------
+PHẦN 2: THIẾT KẾ UI/UX (CHI TIẾT TỪNG MÀN HÌNH)
+1. Trang chủ (Home)
+- Thanh tìm kiếm thông minh (gợi ý lỗi phổ biến: máy lạnh không lạnh, chảy nước...)
+- Danh mục dịch vụ dạng icon
+- Banner khuyến mãi
+- Dịch vụ phổ biến
+- Gợi ý thợ gần đây
+2. Trang đăng yêu cầu (Post Job)
+- Chọn dịch vụ
+- Gợi ý lỗi phổ biến (preset)
+- Nhập mô tả
+- Upload hình ảnh/video
+- Chọn địa chỉ (GPS + nhập tay)
+- Chọn thời gian
+- Nút đăng nhanh
+3. Trang danh sách thợ
+- Hiển thị:
+  + Ảnh đại diện
+  + Rating sao
+  + Số job đã làm
+  + Khoảng cách
+  + Giá tham khảo
+- Bộ lọc:
+  + Giá
+  + Khoảng cách
+  + Đánh giá
+- Sắp xếp thông minh
+4. Trang profile thợ
+- Thông tin cá nhân
+- Kinh nghiệm
+- Ảnh công việc thực tế
+- Review khách hàng
+- Nút gọi / chat / thuê ngay
+5. Chat realtime
+- Nhắn tin
+- Gửi ảnh
+- Gợi ý tin nhắn nhanh
+- Hiển thị trạng thái online
+6. Đặt lịch & xác nhận
+- Chọn giờ
+- Xác nhận
+- Thông báo
+7. Theo dõi đơn hàng
+- Trạng thái:
+  + Đã nhận
+  + Đang đến
+  + Đang làm
+  + Hoàn thành
+8. Thanh toán
+- Tiền mặt
+- Ví điện tử
+- Chuyển khoản
+9. Đánh giá
+- Chấm sao
+- Viết review
+- Gợi ý nội dung review
+----------------------------------
+PHẦN 3: USER FLOW (LUỒNG NGƯỜI DÙNG)
+Mô tả chi tiết từng bước:
+- Mở app → tìm dịch vụ → đăng job → chọn thợ → chat → đặt lịch → hoàn thành → review
+----------------------------------
+PHẦN 4: DATABASE DESIGN
+Thiết kế bảng:
+- Users
+- Workers
+- Jobs
+- Reviews
+- Messages
+- Payments
+Mô tả từng field cụ thể
+----------------------------------
+PHẦN 5: API BACKEND
+Thiết kế REST API:
+- Đăng nhập / đăng ký
+- Đăng job
+- Lấy danh sách thợ
+- Chat
+- Đánh giá
+----------------------------------
+PHẦN 6: LOGIC THÔNG MINH
+- Matching thợ gần nhất
+- Ưu tiên thợ rating cao
+- Gợi ý giá
+- Chống spam
+- Chống phá giá
+----------------------------------
+PHẦN 7: TỐI ƯU UX KIẾM TIỀN
+- Làm sao để khách chọn nhanh
+- Làm sao tăng tỷ lệ chốt đơn
+- Làm sao giữ khách quay lại
+----------------------------------
+PHẦN 8: GỢI Ý CÔNG NGHỆ
+- Frontend: Flutter / React Native
+- Backend: Node.js / Firebase
+- Database: MongoDB / PostgreSQL
+- Realtime: Socket.io
+----------------------------------
+PHẦN 9: BONUS NÂNG CAO
+- AI gợi ý lỗi tự động
+- Chatbot hỗ trợ khách
+- Gợi ý giá sửa chữa
+- Phân tích hành vi người dùng
+----------------------------------
+Yêu cầu trình bày:
+- Rõ ràng, logic, chuyên sâu
+- Có ví dụ thực tế
+- Có gợi ý cải tiến vượt các app hiện tại
+Hãy thiết kế UX khiến khách hàng ra quyết định trong dưới 10 giây và tăng tỷ lệ chọn thợ lên tối đa.
+
+Bạn là một chuyên gia product manager + kỹ sư phần mềm + chuyên gia ngành điện lạnh thực tế 10 năm kinh nghiệm.
+Hãy thiết kế và mô tả chi tiết một ứng dụng mobile dành cho THỢ kỹ thuật (điện lạnh, điện nước, sửa chữa...), hoạt động song song với app khách hàng kiểu marketplace như Vua Thợ.
+Yêu cầu:
+- Viết bằng tiếng Việt
+- Thiết kế theo hướng MVP có thể launch thật, nhưng đủ khả năng scale
+- Kết hợp: UI/UX + logic vận hành + quy trình kỹ thuật thực tế của thợ
+- Tối ưu giúp thợ kiếm tiền nhanh, làm việc chuyên nghiệp, tăng uy tín
+----------------------------------
+PHẦN 1: TỔNG QUAN APP THỢ
+- Mục tiêu ứng dụng
+- Đối tượng thợ (mới / chuyên nghiệp)
+- Vấn đề cần giải quyết (thiếu khách, quản lý công việc kém...)
+- Giá trị cốt lõi
+----------------------------------
+PHẦN 2: UI/UX CHI TIẾT TỪNG MÀN HÌNH
+1. Trang dashboard
+- Hiển thị:
+  + Job mới gần khu vực
+  + Thu nhập hôm nay
+  + Lịch làm việc
+- Nút nhận job nhanh
+2. Trang danh sách job
+- Danh sách yêu cầu từ khách
+- Hiển thị:
+  + Khoảng cách
+  + Mô tả lỗi
+  + Hình ảnh
+  + Giá dự kiến
+- Bộ lọc job
+3. Trang chi tiết job
+- Thông tin khách
+- Ảnh lỗi
+- Địa chỉ map
+- Nút:
+  + Nhận job
+  + Gọi khách
+  + Chat
+4. Trang quản lý công việc
+- Trạng thái:
+  + Đã nhận
+  + Đang di chuyển
+  + Đang sửa
+  + Hoàn thành
+5. Trang thu nhập
+- Tổng tiền
+- Lịch sử giao dịch
+- Thống kê theo ngày/tuần/tháng
+6. Trang hồ sơ thợ
+- Kinh nghiệm
+- Kỹ năng
+- Ảnh công trình
+- Đánh giá khách hàng
+----------------------------------
+PHẦN 3: QUY TRÌNH LÀM VIỆC THỰC TẾ (CỰC QUAN TRỌNG)
+Thiết kế quy trình chuẩn ngành điện lạnh:
+1. Nhận job
+2. Gọi xác nhận khách
+3. Di chuyển
+4. Kiểm tra thiết bị
+5. Chẩn đoán lỗi
+6. Báo giá
+7. Sửa chữa / lắp đặt
+8. Test lại
+9. Bàn giao
+10. Bảo hành
+Yêu cầu:
+- Mỗi bước có checklist cụ thể
+- Có hướng dẫn kỹ thuật cơ bản cho thợ mới
+---------------------------------
+PHẦN 4: CHECKLIST KỸ THUẬT (GIÁ TRỊ KHÁC BIỆT)
+Ví dụ:
+🔹 Vệ sinh máy lạnh:
+- Ngắt điện
+- Tháo vỏ
+- Xịt dàn lạnh
+- Kiểm tra gas
+🔹 Sửa máy không lạnh:
+- Kiểm tra gas
+- Kiểm tra block
+- Kiểm tra board
+🔹 Lắp đặt:
+- Khoan tường
+- Đi ống
+- Hút chân không
+- Test chạy
+----------------------------------
+PHẦN 5: DATABASE
+Thiết kế bảng:
+- Workers
+- Jobs
+- JobStatus
+- Earnings
+- Reviews
+----------------------------------
+PHẦN 6: API
+- Nhận job
+- Cập nhật trạng thái
+- Gửi vị trí realtime
+- Báo giá
+----------------------------------
+PHẦN 7: LOGIC THÔNG MINH
+- Ưu tiên job gần nhất
+- Ưu tiên thợ rating cao
+- Tính điểm uy tín
+- Gợi ý giá sửa chữa
+----------------------------------
+PHẦN 8: TỐI ƯU KIẾM TIỀN CHO THỢ
+- Gợi ý upsell (vệ sinh + nạp gas)
+- Nhắc bảo trì định kỳ
+- Lưu khách hàng cũ
+----------------------------------
+PHẦN 9: CÔNG NGHỆ
+- Flutter / React Native
+- Firebase / Node.js
+- Google Maps API
+----------------------------------
+PHẦN 10: BONUS NÂNG CAO
+- AI chẩn đoán lỗi từ mô tả khách
+- Gợi ý quy trình sửa
+- Nhắc lịch bảo trì
+----------------------------------
+Yêu cầu:
+- Trình bày logic rõ ràng
+- Có ví dụ thực tế
+- Có thể dùng để code thật
+Hãy thiết kế app theo hướng giúp một người thợ mới có thể trở thành thợ chuyên nghiệp trong 3 tháng thông qua hệ thống hướng dẫn và checklist tích hợp trong app.
+
+Bạn là một CTO + Product Manager + System Architect với kinh nghiệm xây dựng hệ thống marketplace (Grab, Shopee, Vua Thợ).
+Hãy thiết kế và mô tả chi tiết một ứng dụng QUẢN LÝ TRUNG TÂM (Admin App / Dashboard) để điều hành toàn bộ hệ thống kết nối:
+- App khách hàng (đặt dịch vụ)
+- App thợ (nhận job)
+- Backend hệ thống
+Yêu cầu:
+- Viết bằng tiếng Việt
+- Thiết kế theo hướng MVP có thể launch thật, nhưng có khả năng scale lớn
+- Bao gồm: UI/UX + chức năng + database + API + logic vận hành + kiếm tiền
+- Tối ưu cho quản lý, kiểm soát, và tăng doanh thu
+----------------------------------
+PHẦN 1: TỔNG QUAN HỆ THỐNG
+- Mô tả tổng thể hệ sinh thái:
+  + Khách hàng → tạo job
+  + Hệ thống → phân phối job
+  + Thợ → nhận và thực hiện
+- Vai trò của app quản lý trung tâm
+- Mục tiêu: kiểm soát toàn bộ hoạt động và dòng tiền
+---------------------------------
+PHẦN 2: DASHBOARD TỔNG QUAN (TRANG CHỦ ADMIN)
+Hiển thị realtime:
+- Số job hôm nay
+- Doanh thu hôm nay
+- Số thợ đang online
+- Tỷ lệ hoàn thành job
+- Bản đồ hiển thị thợ theo khu vực
+----------------------------------
+PHẦN 3: QUẢN LÝ JOB
+- Danh sách job
+- Trạng thái:
+  + Chờ nhận
+  + Đã nhận
+  + Đang làm
+  + Hoàn thành
+  + Hủy
+- Chi tiết job:
+  + Khách
+  + Thợ
+  + Giá
+  + Thời gian
+- Chức năng:
+  + Gán thợ thủ công
+  + Hủy job
+  + Chỉnh sửa
+----------------------------------
+PHẦN 4: QUẢN LÝ THỢ
+- Danh sách thợ
+- Thông tin:					( thêm: theo dõi bảo hiểm của thợ, nhắc nhỡ hết hạn)
+  + Kỹ năng
+  + Khu vực
+  + Rating
+  + Thu nhập
+- Chức năng:
+  + Duyệt / khóa tài khoản
+  + Xếp hạng thợ
+  + Gán job ưu tiên
+----------------------------------
+PHẦN 5: QUẢN LÝ KHÁCH HÀNG
+- Danh sách khách
+- Lịch sử sử dụng dịch vụ
+- Giá trị khách (LTV)
+- Chức năng:
+  + Chăm sóc khách hàng
+  + Gửi khuyến mãi
+----------------------------------
+PHẦN 6: QUẢN LÝ DOANH THU
+- Tổng doanh thu
+- Doanh thu theo ngày / tuần / tháng
+- Hoa hồng từ thợ
+- Thanh toán cho thợ					(thợ nhận thanh toán từ khách, qua app, tiền mặt, khi nhận xác nhận đã nhận thanh toán từ khách sẽ trừ tri phí thu nhập cá nhân chuyển lại tiền cho thợ:
+- Báo cáo tài chính
+----------------------------------
+PHẦN 7: QUẢN LÝ ĐÁNH GIÁ & CHẤT LƯỢNG
+- Xem review khách hàng
+- Phát hiện thợ kém
+- Cảnh báo:
+  + Rating thấp
+  + Nhiều khiếu nại
+----------------------------------
+PHẦN 8: BẢN ĐỒ & PHÂN PHỐI JOB
+- Map realtime:
+  + Thợ
+  + Job
+- Logic:
+  + Gợi ý thợ gần nhất
+  + Ưu tiên thợ tốt
+- Cho phép admin override (chỉ định thợ)
+----------------------------------
+PHẦN 9: HỆ THỐNG THÔNG BÁO
+- Gửi thông báo:
+  + Cho thợ (job mới)
+  + Cho khách (xác nhận)
+- Broadcast toàn hệ thống
+----------------------------------
+PHẦN 10: USER FLOW (LUỒNG VẬN HÀNH)
+1. Khách tạo job
+2. Hệ thống gửi job
+3. Thợ nhận
+4. Thợ làm
+5. Hoàn thành
+6. Khách đánh giá
+7. Hệ thống ghi nhận doanh thu
+----------------------------------
+PHẦN 11: DATABASE DESIGN
+Thiết kế bảng:
+- Users
+- Workers
+- Jobs
+- JobStatusLogs
+- Reviews
+- Payments
+- Notifications
+----------------------------------
+PHẦN 12: API BACKEND
+- Tạo job
+- Nhận job
+- Cập nhật trạng thái
+- Thanh toán
+- Đánh giá
+- Lấy danh sách thợ
+----------------------------------
+PHẦN 13: LOGIC THÔNG MINH (CỐT LÕI)
+- Matching:
+  + Khoảng cách
+  + Rating
+  + Lịch sử
+- Chống phá giá
+- Chống spam
+- Phát hiện gian lận
+----------------------------------
+PHẦN 14: PHÂN QUYỀN (RẤT QUAN TRỌNG)
+- Admin tổng
+- Nhân viên vận hành
+- CSKH
+----------------------------------
+PHẦN 15: TỐI ƯU KIẾM TIỀN
+- Tăng tỷ lệ match job
+- Tăng giá trị mỗi job
+- Giữ chân thợ tốt
+- Giữ chân khách VIP
+----------------------------------
+PHẦN 16: CÔNG NGHỆ
+- Frontend:
+  + Web admin (React.js)
+  + Mobile admin (Flutter)
+- Backend:
+  + Node.js / Firebase
+- Database:
+  + PostgreSQL / MongoDB
+- Realtime:
+  + Socket / Firebase
+----------------------------------
+PHẦN 17: BẢO MẬT
+- Xác thực
+- Phân quyền
+- Chống gian lận
+- Log hoạt động
+----------------------------------
+PHẦN 18: BONUS NÂNG CAO
+- AI phân tích hành vi
+- Dự đoán nhu cầu khách
+- Gợi ý giá tối ưu
+- Tự động phân phối job
+----------------------------------
+Yêu cầu:
+- Trình bày rõ ràng, logic, có thể triển khai thật
+- Có ví dụ thực tế
+- Có đề xuất cải tiến vượt các app hiện tại
+Hãy thiết kế hệ thống có thể mở rộng từ 100 người dùng lên 1 triệu người dùng mà không cần thay đổi kiến trúc cốt lõi.

@@ -1,0 +1,28 @@
+# dependencies
+node_modules
+
+# build output
+dist
+build
+coverage
+.next
+out
+
+# monorepo build cache
+.turbo
+turbo
+
+# config files
+eslint.config.mjs
+*.config.js
+*.config.mjs
+*.config.ts
+
+# lock files
+pnpm-lock.yaml
+
+# types
+*.d.ts
+
+# next build folders inside apps
+apps/*/.next

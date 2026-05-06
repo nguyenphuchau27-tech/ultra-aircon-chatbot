@@ -1,0 +1,206 @@
+# .eslintrc.json for Clean Architecture Enforcement
+
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "import"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    // ========== ARCHITECTURE BOUNDARY ENFORCEMENT ==========
+
+    "@typescript-eslint/no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["../../../*"],
+            "message": "❌ Use path aliases instead of relative imports. Replace '../../../' with '@app/*', '@modules/*', '@shared/*'"
+          },
+          {
+            "group": ["../../*"],
+            "message": "❌ Use path aliases instead of relative imports"
+          },
+          {
+            "group": ["../*"],
+            "message": "⚠️ Use path aliases for imports. This relative path may break if file is moved"
+          }
+        ]
+      }
+    ],
+
+    // ========== LAYER BOUNDARY RULES ==========
+
+    // API layer must not import from other modules' internals
+    "import/no-restricted-paths": [
+      "error",
+      {
+        "zones": [
+          {
+            "target": "./src/api",
+            "from": "./src/modules",
+            "except": [
+              "./src/modules/*/application/services/**",
+              "./src/modules/*/application/dto/**",
+              "./src/modules/*/domain/events/**"
+            ],
+            "message": "❌ API layer can only import: application services, DTOs, and domain events from modules"
+          },
+          {
+            "target": "./src/modules",
+            "from": "./src/api",
+            "message": "❌ Modules must not import from API layer"
+          },
+          {
+            "target": "./src/modules/*/domain",
+            "from": "./src/modules/*/infrastructure",
+            "message": "❌ Domain layer must not depend on infrastructure"
+          },
+          {
+            "target": "./src/modules/*/domain",
+            "from": "./src/modules/*/application",
+            "message": "❌ Domain layer must not depend on application layer"
+          },
+          {
+            "target": "./src/modules",
+            "from": "./src/modules",
+            "except": [
+              "./src/modules/**/*.module.ts"
+            ],
+            "message": "❌ Modules must only communicate via: 1) module exports, 2) domain events, 3) injected repositories"
+          }
+        ]
+      }
+    ],
+
+    // ========== NAMING CONSISTENCY ==========
+
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      {
+        "selector": "default",
+        "format": ["camelCase"],
+        "leadingUnderscore": "allow",
+        "trailingUnderscore": "allow"
+      },
+      {
+        "selector": "entity",
+        "format": ["PascalCase"]
+      },
+      {
+        "selector": "class",
+        "format": ["PascalCase"]
+      },
+      {
+        "selector": "interface",
+        "format": ["PascalCase"],
+        "prefix": []
+      },
+      {
+        "selector": "enum",
+        "format": ["PascalCase"]
+      },
+      {
+        "selector": "typeParameter",
+        "format": ["PascalCase"]
+      }
+    ],
+
+    // ========== CIRCUIT BREAKER - PREVENT BAD PATTERNS ==========
+
+    // Prevent wildcard imports (they hide deep dependencies)
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": ["*"]
+      }
+    ],
+
+    // Prevent default exports (use named exports for better tree-shaking)
+    "import/no-default-export": ["warn"],
+
+    // Prevent importing devDependencies in production code
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "test/**",
+          "**/*.spec.ts",
+          "**/*.test.ts",
+          "**/jest.config.ts"
+        ]
+      }
+    ],
+
+    // ========== QUALITY RULES ==========
+
+    // Require explicit return types (better for architecture clarity)
+    "@typescript-eslint/explicit-function-return-types": [
+      "warn",
+      {
+        "allowExpressions": true,
+        "allowTypedFunctionExpressions": true
+      }
+    ],
+
+    // Require explicit visibility modifiers
+    "@typescript-eslint/explicit-member-accessibility": [
+      "warn",
+      {
+        "accessibility": "explicit",
+        "overrides": {
+          "accessors": "explicit",
+          "constructors": "no-public",
+          "methods": "explicit",
+          "properties": "explicit",
+          "parameterProperties": "explicit"
+        }
+      }
+    ],
+
+    // ========== USE CASE PATTERN VALIDATION ==========
+
+    // Use cases must be named with 'UseCase' suffix
+    "@typescript-eslint/class-name-casing": "off",
+    
+    // ========== CONSTRUCTOR INJECTION VALIDATION ==========
+
+    // Mark constructor as readonly
+    "@typescript-eslint/no-parameter-properties": [
+      "warn",
+      {
+        "allows": ["readonly"]
+      }
+    ]
+  },
+  
+  "overrides": [
+    {
+      "files": ["src/modules/*/domain/**/*.ts"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": ["error"],
+        "import/no-restricted-paths": "off"
+      }
+    },
+    {
+      "files": ["src/modules/*/application/**/*.ts"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": ["error"]
+      }
+    },
+    {
+      "files": ["test/**/*.ts", "**/*.spec.ts"],
+      "rules": {
+        "import/no-extraneous-dependencies": "off"
+      }
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+# infrastructure/kubernetes/pricing-ai-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pricing-ai
+  namespace: ultra-aircon
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: pricing-ai
+  template:
+    metadata:
+      labels:
+        app: pricing-ai
+    spec:
+      containers:
+        - name: pricing-ai
+          image: ${REGISTRY_URL}/pricing-ai:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000

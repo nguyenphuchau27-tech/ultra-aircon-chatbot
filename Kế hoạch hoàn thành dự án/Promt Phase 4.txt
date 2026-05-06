@@ -1,0 +1,62 @@
+Promt Phase 4
+
+Dự án: Ultra Aircon Platform
+
+📍 CURRENT PHASE:
+👉 Phase 4 — Dọn và sync Admin Dashboard
+
+📍 COMPLETED:
+✔ Phase 1 — Backend foundation ổn định
+✔ Phase 2 — Auth production-ready (JWT + session + guard)
+✔ Phase 3 — Orders + Technicians + Tracking DONE
+
+Chi tiết Phase 3:
+- Customer tạo order → OK
+- Admin assign technician → OK
+- Technician nhận job → OK
+- Technician update location → OK
+- Realtime socket hoạt động:
+  + event: technician_location_update
+  + đã test bằng socket client (node script)
+  + backend → client realtime OK
+
+📍 CURRENT BACKEND STATE:
+- NestJS + PostgreSQL + Redis
+- Role-based access: admin / customer / technician
+- Technician có userId mapping đúng với user
+- API location:
+  PUT /api/technicians/location/:id → OK
+- API orders:
+  assign / status / tracking → OK
+
+📍 KNOWN ISSUES (còn tồn tại):
+- Dashboard chưa sync realtime thật
+- Map UI chưa connect socket
+- naming location cần giữ chuẩn:
+  + DB: latitude/longitude
+  + API: lat/lng
+- performance monitoring có lỗi timestamp.getTime
+
+📍 NEXT GOAL (PHASE 4):
+👉 Biến admin-dashboard thành tool vận hành thật
+
+Cụ thể:
+- build global_map.tsx
+- connect socket realtime
+- hiển thị technician di chuyển trên map
+- chỉ dùng API thật (không mock)
+
+📍 YÊU CẦU LÀM VIỆC:
+- đóng vai mentor kỹ thuật
+- giải thích rõ root cause
+- code full để copy
+- production-ready
+- không làm demo
+- Đọc kỹ cấu trúc dự án
+- Đọc kỹ code trong file gửi
+- Nhớ lâu dài code projet trong các phiên chat trong project tigo
+- Hướng dẫn file sữa rõ ràng vị trí đường dẫn
+- Xem kỹ file mới tạo đã có trong cấu trúc hay không, đường dẫn rõ ràng
+
+Bắt đầu:
+"Build realtime global_map.tsx cho admin dashboard"

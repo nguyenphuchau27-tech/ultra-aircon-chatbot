@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: ultra-aircon
+  labels:
+    app: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432 # port mà backend sẽ connect
+      targetPort: 5432
+  clusterIP: None # để StatefulSet có DNS riêng cho từng pod (có thể bỏ None nếu muốn ClusterIP bình thường)

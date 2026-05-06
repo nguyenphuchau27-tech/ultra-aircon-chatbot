@@ -1,0 +1,14 @@
+node_modules
+.pnpm-store
+.turbo
+.git
+.gitignore
+.next
+dist
+coverage
+.env
+.env.*
+apps/*/node_modules
+backend/node_modules
+apps/*/.next
+backend/dist

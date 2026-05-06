@@ -1,0 +1,8 @@
+__turbopack_load_page_chunks__("/ai_os", [
+  "static/chunks/01p2bdzp1k44y.js",
+  "static/chunks/07aiepxyqsg2t.js",
+  "static/chunks/11ufj6s8q10~o.js",
+  "static/chunks/0wmocow~t5mqv.js",
+  "static/chunks/0d64mjlzmd5na.js",
+  "static/chunks/turbopack-00xn_0eq8hlq-.js"
+])

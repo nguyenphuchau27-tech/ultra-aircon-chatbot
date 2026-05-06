@@ -1,0 +1,12 @@
+# infrastructure/kubernetes/pricing-ai-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pricing-ai
+  namespace: ultra-aircon
+spec:
+  selector:
+    app: pricing-ai
+  ports:
+    - port: 8000
+      targetPort: 8000

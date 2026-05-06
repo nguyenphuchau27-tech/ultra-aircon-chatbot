@@ -1,0 +1,273 @@
+Dự án: Ultra Aircon Platform
+Mục tiêu của chat này: DONE HẲN PHASE 4 — Admin Dashboard
+Yêu cầu cốt lõi: THẬT, SẠCH, CHUẨN PRODUCTION, KHÔNG PHÁ HỆ THỐNG, KHÔNG LẶP LẠI CÁC LỖI ĐÃ SỬA
+
+========================
+BỐI CẢNH BẮT BUỘC
+========================
+
+Em phải đọc kỹ PROJECT_BRAIN.md trước, coi đó là single source of truth, nhưng vẫn phải đối chiếu với code thật trong các file được gửi.
+Nếu PROJECT_BRAIN.md và code thật khác nhau, phải nêu rõ chỗ khác và ưu tiên code thật.
+
+Trạng thái hiện tại đã xác nhận:
+- Backend local runtime và docker runtime đã chạy thật
+- Auth backend OK: login, refresh, session, JWT guard, roles guard
+- Admin dashboard đã có login page thật
+- Frontend đã login được bằng backend thật
+- apps/admin-dashboard/src/services/api.ts đã có request interceptor + refresh flow cơ bản
+- /global_map đã load được
+- Đã seed technician thật vào database
+- Đã sửa technician.userId trỏ đúng sang user technician
+- OSM map đã render nền map thật
+- Technician List và Technician Detail đã có dữ liệu thật
+- Production build đã pass
+- Phase 4 chưa done hẳn
+
+Những việc còn thiếu để DONE hẳn Phase 4:
+1. Chốt auth guard sạch cho admin-dashboard
+2. Chốt realtime technician movement thật trên map
+3. Rà dashboard theo MVP, page ngoài scope phải redirect hoặc coming soon, KHÔNG gây hiểu nhầm hệ thống đã xong
+4. Dọn warning/dev mismatch còn lại nếu ảnh hưởng trải nghiệm hoặc build/runtime
+5. Chốt checklist cuối Phase 4 và cập nhật lại PROJECT_BRAIN.md / project-brain.config.json
+
+========================
+NGUYÊN TẮC BẮT BUỘC
+========================
+
+1. KHÔNG ĐƯỢC:
+- xóa file
+- rename file
+- tạo lại cấu trúc thư mục
+- refactor kiến trúc
+- viết lại module
+- thay đổi API contract backend nếu chưa có bằng chứng backend sai
+- sửa backend nếu lỗi chưa được chứng minh nằm ở backend
+- phá những gì đang chạy
+
+2. CHỈ ĐƯỢC:
+- sửa tối thiểu (minimal change)
+- sửa đúng file cần thiết
+- thêm logic cần thiết
+- fix bug cụ thể
+- redirect hoặc coming soon cho page ngoài MVP
+- cập nhật brain/config đúng thực tế sau khi xong
+
+3. MỌI THAY ĐỔI PHẢI:
+- có phân tích nguyên nhân rõ ràng
+- chỉ ra file liên quan
+- giải thích vì sao cần sửa
+- không được sửa theo kiểu “có thể là”
+- bám đúng cấu trúc file thật của project
+
+4. KHI SỬA FILE:
+- luôn viết FULL FILE hoàn chỉnh để copy
+- không đưa patch rời rạc
+- không nói chung chung
+- phải chỉ rõ path file chính xác
+
+========================
+SCOPE CHÍNH XÁC CỦA CHAT NÀY
+========================
+
+Chỉ tập trung hoàn thiện Phase 4:
+- apps/admin-dashboard/*
+- integration cần thiết với backend API/socket hiện có
+- cập nhật PROJECT_BRAIN.md / project-brain.config.json sau khi done
+
+KHÔNG được mở rộng sang:
+- mobile app
+- technician app
+- zalo/facebook
+- AI platform
+- refactor kiến trúc backend
+- dọn toàn bộ codebase ngoài scope Phase 4
+
+========================
+MỤC TIÊU DONE CỦA PHASE 4
+========================
+
+Phase 4 chỉ được coi là DONE khi thỏa toàn bộ:
+1. Admin dashboard có auth guard sạch:
+   - chưa login → redirect /login
+   - access token hết hạn → auto refresh
+   - refresh fail → clear auth + redirect /login
+   - không cần hack localStorage thủ công để vận hành flow cơ bản
+
+2. Global map hoạt động thật:
+   - dùng data thật từ backend
+   - marker hiện thật
+   - technician update location thật → marker di chuyển thật
+   - socket hoặc fallback polling phải hoạt động ổn định
+
+3. Dashboard sạch theo MVP:
+   - chỉ giữ trải nghiệm MVP cần thiết
+   - page ngoài MVP không gây hiểu nhầm đã hoàn thành
+   - không xóa file, chỉ redirect hoặc coming soon nếu cần
+
+4. Production check:
+   - pnpm build pass
+   - pnpm start hoặc flow runtime production tương đương chạy ổn
+   - login OK
+   - refresh OK
+   - map realtime OK
+
+5. Brain update:
+   - PROJECT_BRAIN.md và project-brain.config.json phải được cập nhật đúng trạng thái mới
+
+========================
+DEBUG PROTOCOL (BẮT BUỘC TUÂN THỦ)
+========================
+
+Mọi bug hoặc task đều phải xử lý theo quy trình này:
+
+STEP 1 — XÁC ĐỊNH HIỆN TƯỢNG
+- Mô tả chính xác lỗi hoặc phần chưa done:
+  + xảy ra ở đâu (UI / API / socket / DB / auth flow)
+  + hành vi hiện tại là gì
+  + expected behavior là gì
+- KHÔNG được suy đoán nguyên nhân ở bước này
+
+STEP 2 — KHOANH VÙNG NGUYÊN NHÂN
+- Xác định layer gây lỗi:
+  + frontend
+  + API layer
+  + backend
+  + realtime/socket
+  + database
+- Chỉ rõ file liên quan
+
+STEP 3 — XÁC NHẬN ROOT CAUSE
+- Đọc code thật
+- Chỉ ra dòng/đoạn logic gây lỗi
+- Giải thích vì sao nó gây lỗi
+- Nếu chưa đủ bằng chứng:
+  → yêu cầu thêm log hoặc output
+  → KHÔNG được sửa
+
+STEP 4 — ĐỀ XUẤT FIX (MINIMAL)
+- Chỉ sửa đúng phần gây lỗi
+- Không rewrite lan rộng
+- Không sửa nhiều file không cần thiết
+
+STEP 5 — VIẾT CODE
+- Viết FULL FILE để copy
+- Code phải production-ready
+- Không workaround tạm
+- Không thêm logic dư thừa
+
+STEP 6 — VERIFY
+- Hướng dẫn test lại
+- Nêu expected result
+- Chỉ ra cách xác nhận đã done
+
+STEP 7 — KHÔNG LÀM
+- Không đoán mò
+- Không sửa khi chưa xác định root cause
+- Không sửa lan rộng nhiều file
+- Không refactor khi đang debug
+- Không thay đổi cấu trúc project
+
+========================
+CÁCH LÀM VIỆC TRONG CHAT NÀY
+========================
+
+Thứ tự xử lý bắt buộc:
+1. Đọc PROJECT_BRAIN.md + project-brain.config.json + code thật
+2. Xác định chính xác phần nào của Phase 4 còn thiếu
+3. Chia thành checklist nhỏ theo đúng thứ tự ưu tiên
+4. Làm từng mục một, không nhảy loạn
+5. Mỗi lần sửa phải:
+   - nói rõ root cause
+   - nói rõ file cần sửa
+   - đưa full file hoàn chỉnh
+   - đưa cách test
+6. Sau khi hoàn tất kỹ thuật:
+   - cập nhật PROJECT_BRAIN.md
+   - cập nhật project-brain.config.json
+   - nêu rõ Phase 4 đã DONE hay chưa, còn thiếu gì nếu chưa done
+
+========================
+NHỮNG GÌ KHÔNG ĐƯỢC QUAY LẠI LÀM LẠI
+========================
+
+Không quay lại debug những việc đã xử lý xong trừ khi code hiện tại chứng minh bị hỏng lại:
+- lỗi thiếu /login
+- lỗi import @/services/api
+- lỗi thiếu html/body ở app layout
+- lỗi seed technician
+- lỗi auth session cũ
+- lỗi OSM map render nền
+- lỗi build cũ đã qua
+
+========================
+FILE PHẢI ĐỌC TRƯỚC KHI BẮT ĐẦU
+========================
+
+1. PROJECT_BRAIN.md
+2. project-brain.config.json
+3. PROJECT_STRUCTURE.zip hoặc file structure tương đương
+
+Frontend:
+4. apps/admin-dashboard/src/services/api.ts
+5. apps/admin-dashboard/src/app/layout.tsx
+6. apps/admin-dashboard/src/app/login/page.tsx
+7. apps/admin-dashboard/src/pages/global_map.tsx                           3
+8. apps/admin-dashboard/src/components/maps/google-technician-map.tsx
+9. apps/admin-dashboard/src/components/maps/osm-technician-map.tsx         2
+10. apps/admin-dashboard/src/components/maps/technician-map-wrapper.tsx    1
+
+Auth và backend liên quan:
+11. backend/src/modules/auth/auth.module.ts
+12. backend/src/modules/auth/api/controllers/auth.controller.ts
+13. backend/src/modules/auth/api/dtos/login.dto.ts
+14. backend/src/modules/auth/api/dtos/register.dto.ts
+15. backend/src/modules/auth/api/dtos/refresh-token.dto.ts
+16. backend/src/modules/auth/application/use-cases/login-user.use-case.ts
+17. backend/src/modules/auth/application/use-cases/register-user.use-case.ts
+18. backend/src/modules/auth/application/use-cases/refresh-session.use-case.ts
+19. backend/src/modules/auth/application/use-cases/logout-session.use-case.ts
+20. backend/src/modules/auth/application/use-cases/logout-all-sessions.use-case.ts
+21. backend/src/modules/auth/infrastructure/repositories/typeorm-auth-session.repository.ts
+22. backend/src/modules/auth/infrastructure/strategies/jwt.strategy.ts
+23. backend/src/database/entities/auth-session.entity.ts
+24. backend/src/common/guards/jwt.guard.ts
+25. backend/src/common/guards/roles.guard.ts
+26. backend/src/common/decorators/roles.decorator.ts
+27. backend/src/common/decorators/current-user.decorator.ts
+
+Realtime + technicians:
+28. backend/src/modules/realtime/realtime.module.ts
+29. backend/src/modules/realtime/socket.gateway.ts
+30. backend/src/modules/realtime/tracking.controller.ts
+31. backend/src/modules/realtime/tracking.service.ts
+32. backend/src/modules/technicians/technicians.module.ts
+33. backend/src/modules/technicians/technicians.controller.ts
+34. backend/src/modules/technicians/technicians.service.ts
+35. backend/src/modules/technicians/dto/update-location.dto.ts
+36. backend/src/database/entities/technician.entity.ts
+37. backend/src/database/entities/user.entity.ts
+
+Env nếu cần:
+38. backend/.env.local
+39. backend/.env.docker
+40. apps/admin-dashboard/.env
+
+========================
+OUTPUT MONG MUỐN
+========================
+
+Chat này phải kết thúc bằng:
+- auth guard hoàn chỉnh
+- realtime map hoạt động thật
+- dashboard sạch theo MVP mà không xóa file
+- build/runtime check pass
+- PROJECT_BRAIN.md và project-brain.config.json được cập nhật đúng
+- kết luận rõ: Phase 4 DONE hoặc chưa DONE, và nếu chưa thì còn đúng mục nào
+
+Trả lời phải:
+- trọng tâm
+- ngắn gọn
+- đúng file
+- đúng cấu trúc
+- đúng production mindset
+Lưu ý: chỉ bắt đầu khi đã nhận đủ file.

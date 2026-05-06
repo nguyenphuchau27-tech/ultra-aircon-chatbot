@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: diagnostic-ai
+  namespace: ultra-aircon
+spec:
+  selector:
+    app: diagnostic-ai
+  ports:
+    - port: 8001
+      targetPort: 8001
+  type: ClusterIP

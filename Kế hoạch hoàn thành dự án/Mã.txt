@@ -1,0 +1,4 @@
+Mã ngrok
+ngrok config add-authtoken 3CtDo1qrAWn3DG3WcdIxRGD50LQ_3srjm4tUNyZ23J145e1Er
+
+

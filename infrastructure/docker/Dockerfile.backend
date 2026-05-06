@@ -1,0 +1,17 @@
+# Backend Dockerfile for NestJS API Gateway
+FROM node:20-alpine AS base
+WORKDIR /usr/src/app
+
+COPY backend/api-gateway/package*.json ./
+RUN npm install --production
+
+COPY backend/api-gateway/ .
+RUN npm run build
+
+FROM node:20-alpine AS runtime
+WORKDIR /usr/src/app
+COPY --from=base /usr/src/app/dist ./dist
+COPY --from=base /usr/src/app/node_modules ./node_modules
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["node", "dist/main.js"]

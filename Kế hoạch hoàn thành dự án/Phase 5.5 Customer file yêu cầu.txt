@@ -1,0 +1,22 @@
+customer-app.zip
+backend-core.zip
+PROJECT_BRAIN.md
+project-brain.config.json
+
+- apps/technician-app/lib/services/api_service.dart
+- apps/technician-app/lib/screens/technician_dashboard.dart
+- apps/technician-app/lib/screens/job_detail_screen.dart
+
+- apps/admin-dashboard/src/services/api.ts
+
+
+backend/src/modules/auth/api/controllers/auth.controller.ts
+backend/src/modules/auth/application/use-cases/login-user.use-case.ts
+backend/src/modules/auth/application/use-cases/refresh-session.use-case.ts
+backend/src/modules/auth/application/use-cases/logout-user.use-case.ts
+backend/src/modules/auth/infrastructure/repositories/typeorm-user.repository.ts
+backend/src/database/entities/auth-session.entity.ts
+backend/src/modules/orders/orders.controller.ts
+backend/src/modules/orders/orders.service.ts
+backend/src/database/entities/user.entity.ts
+backend/src/database/entities/order.entity.ts

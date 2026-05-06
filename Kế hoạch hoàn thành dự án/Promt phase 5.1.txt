@@ -1,0 +1,338 @@
+Dự án: Ultra Aircon Platform
+
+Anh muốn em tiếp tục đúng tiến trình, tuyệt đối bám source code thực tế hiện tại, không đoán mò, không mock nếu backend thật đã có, không phá phần đã chạy ổn ở Phase 4 và phần core realtime đã test xong ở Phase 5.
+
+==================================================
+BỐI CẢNH BẮT BUỘC PHẢI HIỂU ĐÚNG
+================================
+
+* Backend NestJS đang chạy thật.
+* Admin dashboard Next.js đang chạy thật.
+* Technician app Flutter đang chạy thật.
+* Phase 4 core đã ổn:
+
+  * admin login đã vào được
+  * global_map đã hiển thị
+  * socket đã connected
+  * admin map đã nhận vị trí technician thật
+* Phase 5 core realtime đã test thật:
+
+  * technician app lấy GPS thật từ emulator
+  * update location manual OK
+  * live tracking ON/OFF OK
+  * backend nhận PUT /api/technicians/location/:id -> 200
+  * admin map update realtime theo mobile
+  * route simulation bằng emulator đã chạy, marker di chuyển liên tục
+* Tuy nhiên, Phase 5 CHƯA được coi là DONE hoàn toàn theo PROJECT_BRAIN.md vì còn thiếu:
+
+  1. rà đúng full backend contract cho mobile flow
+  2. job list / job detail thật cho technician app
+  3. security: fix response không lộ password hash
+  4. chốt dev seed sạch cho admin / customer / technician
+  5. cập nhật lại project brain sau khi done
+
+==================================================
+MỤC TIÊU CỦA PHIÊN NÀY
+======================
+
+Hoàn tất Phase 5 theo chuẩn production và theo đúng PROJECT_BRAIN.md.
+
+Em phải làm cho xong các nhóm việc còn thiếu sau:
+
+1. Kiểm tra và chốt lại backend contract mà technician app đang dùng
+2. Hoàn thiện technician app để bám backend thật cho:
+
+   * login
+   * job list
+   * job detail
+   * update location
+   * live tracking
+3. Fix security issue:
+
+   * mọi response trả ra cho frontend/mobile tuyệt đối không lộ password hash
+4. Chốt dev seed sạch cho 3 actor:
+
+   * admin
+   * customer
+   * technician
+5. Sau khi code xong phải đưa checklist test thật từng bước
+6. Sau khi test xong phải kết luận rõ:
+
+   * cái gì DONE
+   * cái gì chưa DONE
+   * cái gì deferred phase sau
+7. Cuối cùng cập nhật lại PROJECT_BRAIN.md / project-brain.config.json nếu cần
+
+==================================================
+NGUYÊN TẮC LÀM VIỆC BẮT BUỘC
+============================
+
+1. Không được phá phần đang chạy ổn
+
+* Không rewrite bừa những file auth / dashboard / tracking đã chạy OK nếu không thật sự cần
+* Nếu phải sửa, phải giải thích rõ root cause và tác động
+
+2. Không được mock khi backend thật đã có
+
+* Backend là single source of truth
+* Technician app phải đọc dữ liệu thật từ API thật
+
+3. Không vá tạm
+
+* Phải tìm root cause
+* Fix theo hướng production-ready
+
+4. Không tự suy đoán file
+
+* Chỉ làm dựa trên file thực tế anh cung cấp hoặc source hiện có
+
+5. Không kết luận DONE khi chưa có test thật
+
+* Mỗi phần phải có checklist test manual cụ thể
+
+6. Nếu có thay đổi response contract
+
+* Phải sửa DTO / serializer / mapper đúng lớp
+* Không patch tạm ở UI để che bug backend
+
+==================================================
+THỨ TỰ THỰC HIỆN BẮT BUỘC
+=========================
+
+BƯỚC 1 — AUDIT TRƯỚC KHI SỬA
+
+Trước tiên, em phải đọc kỹ và đối chiếu các phần sau trong source hiện tại:
+
+* backend auth flow
+* backend technicians endpoints
+* backend orders endpoints cho technician
+* backend response DTO / serializer / mapper
+* flutter api_service
+* flutter login screen / dashboard / tracking / job-related screen nếu có
+* admin global_map đang consume dữ liệu gì
+
+Sau đó phải báo lại cho anh theo format:
+
+1. Những gì Phase 5 đã DONE thật
+2. Những gì còn thiếu
+3. Những bug / risk đang tồn tại
+4. Kế hoạch sửa theo thứ tự ưu tiên
+
+Chưa được code ngay nếu chưa audit xong.
+
+==================================================
+BƯỚC 2 — FIX SECURITY RESPONSE
+==============================
+
+Ưu tiên cao nhất trước khi mở rộng feature.
+
+Mục tiêu:
+
+* mọi response từ backend trả user / technician / auth payload không được chứa password hoặc password hash
+
+Em phải:
+
+* tìm chính xác endpoint nào đang leak
+* chỉ ra root cause nằm ở DTO / entity return / mapper / serializer / controller / service
+* sửa đúng tầng
+* rà lại toàn bộ endpoint liên quan auth / users / technicians
+
+Sau khi sửa xong phải đưa checklist test:
+
+* endpoint nào test
+* request nào gọi
+* kỳ vọng response không còn password hash
+
+==================================================
+BƯỚC 3 — HOÀN THIỆN JOB FLOW CHO TECHNICIAN APP
+===============================================
+
+Mục tiêu:
+Technician app phải bám backend thật cho:
+
+* job list
+* job detail
+
+Nếu source hiện tại chưa có screen hoàn chỉnh, em phải:
+
+* tận dụng cấu trúc hiện có
+* mở rộng đúng style app hiện tại
+* không làm UI rườm rà
+* ưu tiên đúng dữ liệu thật
+
+Yêu cầu tối thiểu:
+
+* dashboard load danh sách job thật hoặc summary thật
+* bấm vào job xem được detail thật
+* dữ liệu map đúng backend contract
+* xử lý loading / empty / error rõ ràng
+* nếu token hết hạn thì app xử lý đúng flow auth hiện có
+
+Sau khi sửa xong phải đưa checklist test thật:
+
+1. login technician
+2. load job list
+3. mở job detail
+4. verify dữ liệu khớp backend
+
+==================================================
+BƯỚC 4 — CHỐT AUTH FLOW MOBILE CHO SẠCH
+=======================================
+
+Rà lại toàn bộ auth flow technician app:
+
+* lưu access token
+* auto attach Authorization header
+* refresh token flow
+* cold start còn session thì vào dashboard
+* session hết hạn thì quay về login đúng cách
+* logout xóa sạch session local
+
+Nếu phần này đã có rồi, em phải verify lại và chỉ sửa nếu có bug thật.
+
+Checklist test bắt buộc:
+
+1. login thành công
+2. kill app / mở lại app
+3. token còn hạn -> vào dashboard
+4. xóa auth_sessions trong DB hoặc làm expire session
+5. app phải xử lý đúng: refresh được thì tiếp tục, refresh fail thì về login
+
+==================================================
+BƯỚC 5 — CHỐT DEV SEED SẠCH
+===========================
+
+Mục tiêu:
+có bộ seed/dev data sạch, dùng ổn định cho test Phase 5.
+
+Bắt buộc có đủ:
+
+* admin
+* customer
+* technician
+
+Cần làm rõ:
+
+* email
+* password
+* role
+* status
+* technician profile nếu role technician cần mapping riêng
+* dữ liệu order/job mẫu để job list / job detail test được thật
+
+Nếu chưa có script seed chuẩn:
+
+* viết hoặc chỉnh lại seed theo source hiện tại
+* tránh dữ liệu trùng / bẩn / role sai / hash sai
+
+Phải trả lại cho anh:
+
+1. danh sách tài khoản test chuẩn
+2. password test chuẩn
+3. dữ liệu order/job mẫu để test
+4. cách reset seed nếu cần
+
+==================================================
+BƯỚC 6 — RÀ LẠI LIVE TRACKING SAU KHI SỬA
+=========================================
+
+Không cần làm lại từ đầu nếu phần này đang ổn, nhưng phải verify không bị phá.
+
+Cần xác nhận lại:
+
+* lấy vị trí
+* update ngay
+* bật live tracking
+* emulator route movement
+* backend PUT 200
+* admin map update realtime
+
+Nếu có bug nhỏ như updatedAt mapping / status mapping / detail panel, em được sửa nốt cho sạch.
+
+==================================================
+BƯỚC 7 — TEST CHECKLIST CUỐI PHASE 5
+====================================
+
+Sau khi code xong, em phải đưa checklist test manual thật, theo đúng thứ tự, cực rõ, để anh chỉ việc làm theo.
+
+Checklist cuối phải bao gồm ít nhất:
+
+A. Auth mobile
+
+* login
+* cold start
+* refresh session
+* expired session
+* logout
+
+B. Job flow
+
+* load job list
+* open job detail
+* verify contract
+
+C. Tracking
+
+* lấy vị trí
+* update manual
+* live tracking
+* route movement realtime
+
+D. Security
+
+* response không lộ password hash
+
+E. Seed
+
+* admin / customer / technician đều login / dùng được đúng role
+
+==================================================
+FORMAT TRẢ LỜI BẮT BUỘC
+=======================
+
+Mỗi lần trả lời, em ưu tiên format:
+
+1. Phân tích
+2. Root cause
+3. File cần sửa
+4. Code hoàn chỉnh để anh copy
+5. Cách chạy / cách test
+6. Kết luận tác động
+
+Nếu sửa nhiều file:
+
+* chia từng file rõ ràng
+* không cắt mất import
+* không gửi code nửa chừng
+
+==================================================
+ĐIỀU CẤM
+========
+
+* Không nói chung chung kiểu “có thể”, “chắc là”, “thử xem”
+* Không yêu cầu anh sửa bằng tay mơ hồ
+* Không phá auth/dashboard/tracking đang chạy
+* Không tự chuyển phase
+* Không kết luận DONE nếu chưa có bằng chứng test
+* Không bỏ qua issue password hash leak
+* Không bỏ qua dev seed
+
+==================================================
+ĐẦU RA CUỐI CÙNG ANH CẦN
+========================
+
+Khi hoàn tất, em phải trả ra 4 thứ:
+
+1. Kết luận chính xác Phase 5:
+
+* DONE hay CHƯA DONE
+* vì sao
+
+2. Danh sách file đã sửa
+
+3. Checklist test manual cuối cùng
+
+4. Nội dung cập nhật cho PROJECT_BRAIN.md / project-brain.config.json để phản ánh trạng thái mới nhất
+
+Bây giờ bắt đầu từ BƯỚC 1:
+Audit source hiện tại và báo lại chính xác Phase 5 còn thiếu gì, không đoán mò.

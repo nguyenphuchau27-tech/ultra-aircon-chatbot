@@ -1,0 +1,96 @@
+groups:
+  - name: ultra-aircon-alerts
+    rules:
+      # ---------- APPLICATION ALERTS ----------
+      - alert: BackendDown
+        expr: up{job="ultra-aircon-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Backend service is down'
+          description: 'Backend service has been down for more than 1 minute'
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High response time detected'
+          description: '95th percentile response time > 2s for 2 minutes'
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'High error rate detected'
+          description: 'Error rate > 5% for 1 minute'
+
+      # ---------- DATABASE ALERTS ----------
+      - alert: PostgresDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'PostgreSQL is down'
+          description: 'PostgreSQL database is not responding'
+
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Redis is down'
+          description: 'Redis cache is not responding'
+
+      # ---------- INFRASTRUCTURE ALERTS ----------
+      - alert: HighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total[5m]) > 0.8
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High CPU usage'
+          description: 'Container CPU usage > 80% for 2 minutes'
+
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes / container_spec_memory_limit_bytes > 0.9
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High memory usage'
+          description: 'Container memory usage > 90% for 2 minutes'
+
+      - alert: DiskSpaceLow
+        expr: (1 - node_filesystem_avail_bytes / node_filesystem_size_bytes) > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Low disk space'
+          description: 'Disk usage > 85% for 5 minutes'
+
+      # ---------- LOGGING ALERTS ----------
+      - alert: ElasticsearchDown
+        expr: up{job="elasticsearch"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Elasticsearch is down'
+          description: 'Elasticsearch logging service is not responding'
+
+      - alert: FluentdDown
+        expr: up{job="fluentd"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Fluentd is down'
+          description: 'Fluentd log aggregator is not responding'

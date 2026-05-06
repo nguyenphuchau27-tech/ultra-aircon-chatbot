@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: ultra-aircon
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+
+    rule_files:
+      - /etc/prometheus/alerts.yml
+
+    scrape_configs:
+      - job_name: "api-gateway"
+        static_configs:
+          - targets: ["api-gateway:3000"]
+
+  alerts.yml: |
+    groups:
+    - name: backend-alerts
+      rules:
+
+      - alert: HighCPU
+        expr: sum(rate(container_cpu_usage_seconds_total[1m])) by (pod) > 0.8
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Pod CPU > 80%"
+          description: "Pod {{ $labels.pod }} CPU usage high"
+
+      - alert: HighMemory
+        expr: sum(container_memory_usage_bytes) by (pod) > 500000000
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pod Memory > 500MB"
+          description: "Pod {{ $labels.pod }} memory usage high"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: ultra-aircon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: ultra-aircon
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - name: http
+      port: 9090
+      targetPort: 9090
+  type: NodePort

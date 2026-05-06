@@ -1,0 +1,168 @@
+Dự án: Ultra Aircon Platform
+
+CURRENT PHASE:
+PHASE 6 — Tích hợp Zalo / Facebook đúng kiến trúc
+
+BỐI CẢNH ĐÃ DONE:
+- Phase 1 — Backend foundation: DONE
+- Phase 2 — Auth production-ready: DONE
+- Phase 3 — Orders + Technicians + Tracking: DONE
+- Phase 4 — Admin Dashboard MVP-ready: DONE
+- Phase 5 — Technician App production core: DONE
+- Phase 5.5 — Customer App production core: DONE
+
+Phase 5.5 đã test thật:
+- Customer login thật bằng test@example.com / 12345678
+- Customer tạo order thật qua backend
+- Customer xem danh sách order thật
+- Customer xem order detail thật
+- Admin assign technician thật
+- Technician start/complete job thật
+- Customer app refresh thấy status completed và technician đúng
+- Response cơ bản không leak password/token/session
+- Không mock data
+
+MỤC TIÊU PHASE 6:
+Tích hợp Zalo / Facebook đúng kiến trúc production, nhưng KHÔNG đưa business logic vào bot.
+
+NGUYÊN TẮC BẮT BUỘC:
+1. Trước khi đề xuất sửa code, phải đọc source thật đã upload.
+2. Không đoán path file. Nếu chưa rõ, phải kiểm tra cấu trúc trước.
+3. Không mock nếu backend thật đã có.
+4. Backend NestJS là single source of truth.
+5. Zalo/Facebook bot chỉ là channel adapter, không chứa business logic.
+6. Bot không được tự tạo order bằng logic riêng; phải gọi backend API thật.
+7. Auth/session/role vẫn do backend xử lý.
+8. Không hardcode token production.
+9. Không expose password, refreshToken, accessToken, session secret ra log/response.
+10. Không phá các flow đã pass: Admin Dashboard, Technician App, Customer App.
+11. Sửa file nào phải ghi rõ file path thật.
+12. Ưu tiên viết file hoàn chỉnh nếu cần copy.
+13. Sau mỗi bước phải có test thật bằng backend đang chạy.
+14. Không chuyển phase nếu checklist Phase 6 chưa pass.
+
+PHẠM VI PHASE 6:
+- Audit hiện trạng thư mục chatbot / bot / integration hiện có.
+- Xác định kiến trúc adapter cho Zalo và Facebook.
+- Thiết kế webhook nhận message/event.
+- Chuẩn hóa DTO inbound message.
+- Map message từ Zalo/Facebook về cùng một backend service.
+- Nếu user muốn tạo order từ chat: bot phải gọi POST /api/orders hoặc API backend phù hợp.
+- Nếu user muốn xem order: bot phải gọi backend API phù hợp.
+- Không truy cập DB trực tiếp từ bot.
+- Không viết business rule trong bot.
+- Có log sạch, không lộ token/user secrets.
+
+KHÔNG LÀM TRONG PHASE 6:
+- Không làm AI nâng cao.
+- Không làm digital twin.
+- Không làm payment.
+- Không làm notification phức tạp.
+- Không làm lại Customer App / Technician App nếu không liên quan trực tiếp.
+- Không refactor lớn backend nếu không cần.
+
+BƯỚC LÀM BẮT BUỘC:
+
+BƯỚC 1 — Audit source thật
+- Đọc PROJECT_BRAIN.md
+- Đọc project-brain.config.json
+- Đọc PROJECT_STRUCTURE.zip nếu có
+- Audit thư mục liên quan: chatbot, bots, backend modules liên quan, webhook/controller nếu có
+- Chỉ sau audit mới được đề xuất sửa code
+
+BƯỚC 2 — Chốt kiến trúc Phase 6
+Phải xác định rõ:
+- Zalo adapter nằm ở đâu
+- Facebook adapter nằm ở đâu
+- Backend API nào được gọi
+- Data flow: Zalo/Facebook → adapter → backend API → response
+- Không có business logic trong adapter
+
+BƯỚC 3 — Implement tối thiểu Zalo/Facebook webhook foundation
+- Webhook endpoint chạy thật
+- Verify request nếu source hiện có hỗ trợ
+- Parse inbound event an toàn
+- Log tối thiểu, không leak secrets
+- Trả response đúng format platform
+
+BƯỚC 4 — Kết nối backend thật
+- Tạo service gọi backend API thật
+- Có timeout, error handling
+- Không gọi DB trực tiếp
+- Không mock order/customer/technician
+
+BƯỚC 5 — Test manual thật
+Phải test tối thiểu:
+- Backend boot OK
+- Webhook endpoint nhận request OK
+- Message test vào adapter OK
+- Adapter gọi backend API OK
+- Response trả về platform OK
+- Error case không crash
+- Không leak token/password/session trong log/response
+
+DEFINITION OF DONE PHASE 6:
+- Đã audit source thật trước khi sửa
+- Kiến trúc Zalo/Facebook adapter rõ ràng
+- Bot chỉ là channel adapter
+- Backend vẫn là source of truth
+- Webhook foundation chạy thật
+- Có ít nhất 1 flow message → backend API → response chạy thật
+- Không mock business data
+- Không leak secrets
+- Không phá Phase 4 / 5 / 5.5
+- Có checklist test manual pass
+- PROJECT_BRAIN.md và project-brain.config.json được cập nhật cuối phase
+
+TÀI KHOẢN TEST DEV:
+- Customer: test@example.com / 12345678
+- Technician: tech@example.com / 12345678
+- Admin: admin@example.com / 12345678
+
+==================================================
+QUY TẮC BẮT BUỘC TRONG TOÀN BỘ PHIÊN LÀM VIỆC
+==================================================
+
+Trước mỗi lần trả lời, đề xuất sửa code, hướng dẫn test, hoặc kết luận DONE, em phải tự đối chiếu lại toàn bộ prompt Phase 5.5 này cùng PROJECT_BRAIN.md và project-brain.config.json.
+
+Không được trả lời theo trí nhớ.
+Không được đoán file.
+Không được tự suy luận đường dẫn.
+Không được bỏ qua checklist.
+Không được nhảy bước.
+Không được code trước khi audit.
+Không được kết luận DONE nếu chưa test thật.
+
+Mỗi câu trả lời phải tự đối chiếu với:
+1. Mục tiêu Phase 6
+2. Nguyên tắc bắt buộc
+3. Thứ tự thực hiện
+4. File/source thật đã được upload
+5. Checklist test thật
+6. PROJECT_BRAIN.md
+7. project-brain.config.json
+
+Nếu câu trả lời có sửa code, bắt buộc phải ghi rõ:
+- Đang ở bước nào
+- File chính xác cần sửa
+- Vị trí chính xác cần sửa
+- Vì sao sửa
+- Code hoàn chỉnh
+- Cách chạy thật
+- Cách test thật
+- Tác động đến phần đã chạy ổn
+
+Nếu chưa đọc đủ source hoặc chưa chắc file tồn tại, phải nói rõ “chưa đủ căn cứ” và yêu cầu đúng file cần thiết, không được đoán.
+YÊU CẦU TRẢ LỜI:
+- Luôn đọc cấu trúc dự án khi trả lời hoặc nói về file cần sữa
+- Đường dân file phải đúng với cấu trúc dự án
+- Luôn phân tích root cause trước khi sửa
+- Luôn nói rõ file path thật
+- Không nói chung chung
+- Không nhảy phase
+- Không đề xuất việc ngoài scope khi checklist hiện tại chưa xong
+- Khi test nói rõ môi trườn test hướng dẫn chi tiết từng bước test
+- Tất cả mọi việc đều chọn phương án chuẩn nhất theo mục tiêu production
+- Khi thực hiện công việc phải nói rõ bước làm ngay và khi xong cũng phải nói bước làm ngay là gì
+- Thực hiện xong bước rồi bước tiếp theo cần làm gì nói rõ và thực hiện, hoặc yêu cầu (nếu có)
+Bắt đầu: đọc toàn bộ source và nói rõ thực hiện bước đầu tiên cần làm.

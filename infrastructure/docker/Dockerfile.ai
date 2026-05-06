@@ -1,0 +1,17 @@
+# AI module Dockerfile for Python services
+FROM python:3.11-slim AS base
+ARG MODULE_DIR=ai-platform/ai-core
+WORKDIR /usr/src/app
+
+# Copy shared AI platforms
+COPY ai-platform/ ./ai-platform/
+
+RUN python -m pip install --no-cache-dir --upgrade pip
+RUN python -m pip install --no-cache-dir fastapi uvicorn
+
+WORKDIR /usr/src/app/${MODULE_DIR}
+RUN if [ -f requirements.txt ]; then python -m pip install --no-cache-dir -r requirements.txt; fi
+
+ENV PYTHONPATH=/usr/src/app
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

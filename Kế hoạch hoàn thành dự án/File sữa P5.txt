@@ -1,0 +1,25 @@
+Thứ tự em đề xuất, rất sát production:
+
+PROJECT_BRAIN.md
+để chốt phase, rule, contract, scope. Đã đọc xong.
+apps/technician-app/lib/main.dart 
+để xác định entrypoint, app boot, initial route, auth restore.
+apps/technician-app/lib/config/api_config.dart
+để kiểm tra base URL, env, backend target.
+apps/technician-app/lib/services/api_service.dart
+để kiểm tra cách gọi backend, auth header, error handling.
+apps/technician-app/lib/screens/login_screen.dart
+để xác minh login thật hay mock.
+apps/technician-app/lib/screens/technician_dashboard.dart
+để xem sau login app vào đâu, lấy data gì.
+apps/technician-app/lib/screens/tracking_screen.dart
+và map_tracking_screen.dart
+để xác minh flow update location thật.
+apps/technician-app/lib/services/location_service.dart
+và socket_service.dart
+để kiểm tra GPS/source location/realtime.
+Backend files tương ứng:
+backend/src/modules/auth/api/controllers/auth.controller.ts
+backend/src/modules/orders/orders.controller.ts
+backend/src/modules/technicians/technicians.controller.ts
+backend/src/modules/realtime/tracking.controller.ts

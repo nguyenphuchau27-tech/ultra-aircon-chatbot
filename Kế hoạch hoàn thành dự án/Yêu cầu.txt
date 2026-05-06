@@ -1,0 +1,51 @@
+Yêu cầu:
+Chạy thật, sạch và đúng product app theo chế độ vận hành hoan hảo. 
+Local dev sạch không lỗi
+Xem kỹ cấu trúc trước khi đưa đường dẫn file cần chỉnh sữa hoặc thêm
+
+Lưu ý: 
+chúng ta phải chạy thật và em nói rõ môi trường khi test
+Hướng dẫn chi tiết từng bước.
+đưa phương án chuẩn nhất
+nói vào trọng tâm 
+chỉ chính sác file cần sữa
+vị trí code cần sữa
+
+khi đang làm việc anh úp hình em phải đọc và hướng dẫn tiếp
+
+
+
+
+rước khi yêu cầu sữa chữa em hãy xem lại cấu trúc,
+ và các file source đã gửi nhé các đường link nội dung trong file phải đọc!
+
+SELECT id, name, email, phone, role, status
+FROM users
+ORDER BY id;
+
+UPDATE users
+SET password = '12345678'
+WHERE email = 'admin@example.com';
+
+Pass admin
+
+$2b$10$/MiuU6.T/JXcZ7xJuhQBCO15vPnNfc7aCOMBBcN5To7JcIfKvCjNu
+
+UPDATE users
+SET password = '$2b$10$/MiuU6.T/JXcZ7xJuhQBCO15vPnNfc7aCOMBBcN5To7JcIfKvCjNu'
+WHERE email = 'admin@example.com';
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJhZG1pbiIsInNlc3Npb25JZCI6ImVkNjgyOTI2LTcxOTQtNDNhYi05NmYxLWJlMGRiNGJiZTY0NiIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3NzYzMzY1NDgsImV4cCI6MTc3NjMzNzQ0OH0.qkIZgipOJSeUg_C_p4mCmdf53WADa3WgZtFwMNRWQyQ
+
+localStorage.setItem('accessToken', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJhZG1pbiIsInNlc3Npb25JZCI6ImVkNjgyOTI2LTcxOTQtNDNhYi05NmYxLWJlMGRiNGJiZTY0NiIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3NzYzMzY1NDgsImV4cCI6MTc3NjMzNzQ0OH0.qkIZgipOJSeUg_C_p4mCmdf53WADa3WgZtFwMNRWQyQ')
+
+localStorage.setItem('accessToken', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJhZG1pbiIsInNlc3Npb25JZCI6ImYwMzBlNTJiLTAyMWEtNDYyMS1hM2ZkLTNhZTU3MDFmMDEwZiIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3NzYzNDM0MDgsImV4cCI6MTc3NjM0NDMwOH0.xi8lgQLU2LEMnefoIIqCthusG_o9cLQgvJ0cVdI114I')
+location.reload()
+
+const t = localStorage.getItem('accessToken');
+const p = JSON.parse(atob(t.split('.')[1]));
+console.log(p);
+
+flutter clean
+flutter pub get
+flutter run

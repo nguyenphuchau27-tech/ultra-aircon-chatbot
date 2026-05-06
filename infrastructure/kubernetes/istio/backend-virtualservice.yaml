@@ -1,0 +1,16 @@
+# infrastructure/kubernetes/istio/backend-virtualservice.yaml
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: backend-virtualservice
+spec:
+  hosts:
+    - '*'
+  gateways:
+    - istio-system/ingressgateway
+  http:
+    - route:
+        - destination:
+            host: backend.default.svc.cluster.local
+            port:
+              number: 3000

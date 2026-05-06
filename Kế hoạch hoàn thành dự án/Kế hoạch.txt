@@ -1,0 +1,503 @@
+FULL_SOURCE_EXPORT.txt
+Tài liệu
+structure.zip
+Lưu trữ Zip
+PROJECT_BRAIN.md
+Tệp
+Anh đang xây dựng một ứng dụng đa nền tảng, chạy trên các kênh:
+- App
+- Zalo
+- Facebook
+- Web
+
+Anh là người mới học code, dự án chủ yếu được xây dựng với sự hỗ trợ từ ChatGPT, nên em hãy đóng vai trò như một kỹ sư phần mềm kiêm mentor kỹ thuật đồng hành cùng anh từ đầu đến cuối dự án.
+
+Yêu cầu làm việc:
+
+1. Trước tiên, hãy đọc và phân tích thật kỹ toàn bộ cấu trúc dự án và toàn bộ source code hiện có.
+2. Hiểu sâu cách hệ thống đang hoạt động, bao gồm:
+   - cấu trúc thư mục
+   - luồng xử lý chính
+   - chức năng từng module
+   - phần frontend
+   - phần backend
+   - database
+   - API
+   - tích hợp đa nền tảng như app, Zalo, Facebook, web
+3. Sau khi đọc xong, hãy lập cho anh một kế hoạch tổng thể theo từng bước, theo thứ tự ưu tiên rõ ràng để hoàn thiện dự án.
+4. Chia kế hoạch thành các giai đoạn nhỏ, dễ làm, dễ theo dõi, và mỗi giai đoạn cần nêu:
+   - mục tiêu
+   - việc cần làm
+   - file nào cần sửa
+   - rủi ro có thể gặp
+   - cách kiểm tra sau khi làm xong
+5. Chúng ta sẽ làm lần lượt từng bước một. Mỗi lần em chỉ hướng dẫn anh đúng phần đang làm, nhưng vẫn phải giữ toàn bộ bối cảnh của dự án.
+6. Tất cả các cuộc chat liên quan đến dự án phải thống nhất logic với nhau, không bị mâu thuẫn, không quên bối cảnh cũ, để tránh sửa đi sửa lại nhiều lần.
+7. Hãy luôn ghi nhớ toàn bộ dự án, các quyết định kỹ thuật, các file đã sửa, các tính năng đã làm, các lỗi đã gặp và cách đã xử lý.
+8. Mỗi khi hướng dẫn code, hãy:
+   - giải thích dễ hiểu vì anh là người mới
+   - viết code rõ ràng, sạch, production-ready
+   - hạn chế sửa chắp vá
+   - ưu tiên sửa đúng gốc vấn đề
+   - nêu rõ vì sao phải làm như vậy
+9. Khi trả lời, hãy ưu tiên theo format:
+   - Phân tích vấn đề
+   - Kế hoạch / kiến trúc đề xuất
+   - Code đầy đủ
+   - Cách chạy / cách test
+   - Hướng tối ưu thêm
+10. Nếu phát hiện phần nào trong dự án đang thiết kế chưa tốt, thiếu bảo mật, khó scale, khó bảo trì, hoặc dễ lỗi, hãy chủ động chỉ ra và đề xuất cách cải thiện tốt hơn.
+11. Mục tiêu cuối cùng là giúp anh hoàn thiện dự án một cách bài bản, đồng nhất, dễ bảo trì, dễ nâng cấp và tốt nhất có thể.
+
+Nguyên tắc làm việc:
+- Không trả lời quá chung chung.
+- Không bỏ sót bối cảnh cũ.
+- Không thay đổi kiến trúc tùy tiện nếu chưa phân tích tác động.
+- Luôn bám sát code hiện tại trước khi đề xuất sửa.
+- Nếu cần refactor, hãy giải thích rõ refactor phần nào, vì sao, và ảnh hưởng ra sao.
+- Hãy đồng hành như một technical mentor thực thụ để giúp anh hoàn thành dự án hoàn hảo nhất.
+Đã suy nghĩ trong 1m 9s
+🔍 Phân tích
+
+Bảo Ngọc đã đọc lại phần source và cấu trúc anh vừa cung cấp, và em chốt được bức tranh hiện tại như sau:
+
+Dự án đang là một monorepo đa nền tảng với workspace cho apps/* và backend, có script build/dev/test/lint ở root, đồng thời có script riêng để sinh PROJECT_BRAIN.md.
+
+Hệ thống hiện tại có 4 lớp lớn:
+
+Backend NestJS là trung tâm business logic.
+Admin dashboard Next.js là client web quản trị.
+Mobile/technician app là app Flutter đang ở mức skeleton.
+AI / bot integrations gồm support-ai, diagnostic-ai, dispatch-ai, pricing-ai, cùng webhook Facebook và Zalo.
+Em hiểu hệ thống đang vận hành thế nào
+A. Root / monorepo
+
+Root đang dùng:
+
+pnpm workspace
+turbo
+script brain:generate để sinh PROJECT_BRAIN.md
+Điều này rất tốt vì mình đã có nền để chuẩn hóa toàn dự án thay vì làm rời rạc.
+B. Backend
+
+Backend là NestJS, có:
+
+main.ts
+app.module.ts
+database/entities
+health
+common
+modules/auth
+modules/users
+modules/orders
+modules/technicians
+modules/payments
+modules/realtime
+modules/reviews
+thêm nhiều module mở rộng như maps, dispatch, notifications, ai, iot, meta, marketplace.
+
+main.ts cho thấy backend đã đi theo hướng production hơn mức demo:
+
+có check env bắt buộc
+helmet
+compression
+global prefix /api
+CORS
+ValidationPipe
+rate limit
+interceptor hiệu năng + response.
+
+app.module.ts xác nhận backend đang gom các module cốt lõi:
+
+AuthModule
+UsersModule
+TechniciansModule
+OrdersModule
+PaymentsModule
+ChatModule
+NotificationsModule
+CacheModule
+HealthModule
+và có entity chính là User, Technician, Order, AuthSession.
+C. Database
+
+Database hiện tại dùng PostgreSQL và Redis trong docker-compose.yml; TypeORM entity cho thấy domain cốt lõi đang xoay quanh:
+
+users
+technicians
+orders
+auth_sessions
+
+Order entity đã có cấu trúc tương đối rõ:
+
+customer
+technician
+service type
+địa chỉ / lat / lng
+price
+status
+thời gian tạo.
+
+AuthSession entity cho thấy anh đã bắt đầu đi đúng hướng cho multi-client session:
+
+appType
+deviceType
+refreshTokenHash
+ipAddress
+userAgent
+expiresAt
+Đây là nền tốt để sau này quản lý login cho mobile-app, technician-app, admin-dashboard.
+D. API
+
+PROJECT_BRAIN.md đã map ra khoảng 30 API, trong đó nhóm cốt lõi nhất hiện tại là:
+
+/auth/register
+/auth/login
+/orders/*
+/technicians/*
+/users/*
+/tracking/*
+/health
+/reviews
+
+Điểm tốt:
+
+đã có route map rõ.
+các API cốt lõi cho MVP đã xuất hiện.
+
+Điểm chưa tốt:
+
+nhiều API đã có route nhưng chưa chắc business logic đủ sâu hoặc đủ production.
+E. Auth
+
+Auth hiện tại là phần đáng chú ý nhất:
+
+đang đi theo hướng clean architecture hơn trước, với api/controllers, application/use-cases, domain, infrastructure.
+có BcryptHashingService và NestJwtServiceAdapter, tách access token / refresh token riêng.
+nhưng root .env.example vẫn còn dùng JWT_SECRET, trong khi main.ts lại yêu cầu JWT_ACCESS_SECRET và JWT_REFRESH_SECRET. Đây là mismatch cấu hình thật, sẽ gây lỗi cấu hình hoặc hiểu nhầm khi setup môi trường.
+F. Admin dashboard
+
+Admin dashboard là phần client trưởng thành nhất hiện nay:
+
+Next.js
+React
+axios
+chart.js
+socket.io-client
+Google Maps.
+
+Code cho thấy dashboard đang có các page như:
+
+analytics
+global map
+ecosystem
+ai_control
+ai_os
+users / orders / technicians
+và có sidebar dùng chung. Nhưng vẫn còn dấu hiệu duplication như src/components/Sidebar.tsx và src/components/components/Sidebar.tsx.
+
+global_map.tsx cho thấy admin đang cố làm realtime tracking technician bằng:
+
+API fallback
+socket realtime
+GoogleMap + Marker.
+
+Tuy nhiên dashboard hiện còn một vấn đề kiến trúc:
+
+nhiều page gọi API mà backend chưa chắc có route thật tương ứng, ví dụ /ai/status, /ai-os, /ecosystem/stats. Tức là UI đang đi trước backend ở một số chỗ.
+G. Multi-platform: app / Zalo / Facebook
+
+Hiện tại:
+
+Facebook bot chỉ nhận webhook, log message, trả 200.
+Zalo bot cũng tương tự, mới ở mức webhook mỏng.
+support-ai hiện trả lời rule-based đơn giản như “sửa máy lạnh”, “giá bao nhiêu”.
+diagnostic-ai và dispatch-ai có khung Python khá rõ hơn, nhưng vẫn thiên về module demo/khung xử lý hơn là service production hoàn chỉnh.
+
+Kết luận thẳng:
+
+Dự án của anh đã có khung hệ thống đủ lớn, nhưng chưa đồng đều.
+Backend core có nền tốt nhất. Admin dashboard đứng thứ hai. Bot và AI mới ở mức khung. Mobile/technician app vẫn cần hoàn thiện mạnh.
+
+🏗️ Kế hoạch / kiến trúc đề xuất
+
+Em chốt luôn roadmap tổng thể theo đúng ưu tiên để từ giờ mọi chat không lệch nhau nữa.
+
+Giai đoạn 0 — Chốt nguồn sự thật của dự án
+Mục tiêu
+
+Làm cho mọi cuộc chat sau bám cùng một logic.
+
+Việc cần làm
+dùng PROJECT_BRAIN.md làm single source of truth
+cập nhật thêm:
+current phase
+decisions
+known issues
+files changed
+thống nhất rằng backend là business core
+thống nhất rằng customer-app hiện out of scope
+thống nhất rằng MVP hiện tại = backend + admin-dashboard + mobile-app + technician-app
+File cần sửa
+PROJECT_BRAIN.md
+Rủi ro
+nếu không cập nhật brain sau mỗi quyết định, chat sau sẽ lại lệch.
+Cách kiểm tra
+mở chat mới, chỉ cần gửi PROJECT_BRAIN.md + task hiện tại, em vẫn phải trả lời đúng bối cảnh.
+Giai đoạn 1 — Ổn định backend foundation
+Mục tiêu
+
+Đảm bảo backend là nền móng thật sự ổn định.
+
+Việc cần làm
+fix mismatch env:
+root .env.example đang dùng JWT_SECRET
+main.ts yêu cầu JWT_ACCESS_SECRET, JWT_REFRESH_SECRET
+fix health/memory false critical
+chốt port/env naming thống nhất (BACKEND_PORT vs PORT)
+kiểm tra docker-compose.yml với env thực tế backend
+File cần sửa
+backend/src/main.ts
+backend/src/health/*
+backend/src/common/memory-optimization.service.ts
+root .env.example
+backend/.env.example nếu có
+Rủi ro
+sửa env thiếu đồng bộ làm backend chạy local được nhưng Docker fail.
+Cách kiểm tra
+npm run start:dev
+GET /api/health
+docker compose up -d
+backend phải boot ổn, không báo critical giả.
+Giai đoạn 2 — Chuẩn hóa auth
+Mục tiêu
+
+Làm auth thành entry point chuẩn cho mọi client.
+
+Việc cần làm
+audit và chốt register/login/refresh/logout
+dùng thống nhất session với AuthSession
+chuẩn hóa response auth
+kiểm tra JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, thời gian hết hạn
+test login cho 3 client:
+admin-dashboard
+mobile-app
+technician-app
+File cần sửa
+backend/src/modules/auth/**/*
+backend/src/database/entities/auth-session.entity.ts
+Rủi ro
+auth sai sẽ kéo theo toàn bộ app không test được.
+có thể đang còn code legacy hoặc use case chưa nối đủ.
+Cách kiểm tra
+POST /api/auth/register
+POST /api/auth/login
+nếu có refresh thì test tiếp refresh/logout.
+Giai đoạn 3 — Orders + Technicians = lõi nghiệp vụ
+Mục tiêu
+
+Chạy được flow kinh doanh đầu tiên.
+
+Việc cần làm
+customer tạo order
+hệ thống lưu order
+technician được assign
+technician cập nhật location
+admin dashboard nhìn thấy tracking
+File cần sửa
+backend/src/modules/orders/**/*
+backend/src/modules/technicians/**/*
+backend/src/modules/realtime/**/*
+apps/admin-dashboard/src/pages/global_map.tsx
+Rủi ro
+naming lat/lng vs latitude/longitude có thể không đồng nhất giữa dispatch, technician, map.
+UI gọi endpoint chưa tồn tại thật.
+Cách kiểm tra
+tạo order thành công
+assign technician thành công
+update location xong admin nhìn thấy map đổi.
+Giai đoạn 4 — Dọn admin-dashboard để thành công cụ vận hành thật
+Mục tiêu
+
+Biến dashboard từ demo page thành admin tool thật.
+
+Việc cần làm
+kiểm tra từng page nào đã có backend thật, page nào chỉ là placeholder
+bỏ duplication component
+tạo API layer thống nhất
+thêm auth guard cho dashboard
+chỉ giữ page thuộc MVP
+File cần sửa
+apps/admin-dashboard/src/components/**/*
+apps/admin-dashboard/src/pages/**/*
+apps/admin-dashboard/src/services/**/*
+Rủi ro
+nếu giữ quá nhiều page “ảo”, team sẽ tưởng hệ thống đã xong trong khi backend chưa có.
+Cách kiểm tra
+build dashboard thành công
+các page MVP đều load đúng dữ liệu thật
+page chưa có backend thì bị ẩn hoặc gắn clearly “coming soon”.
+Giai đoạn 5 — Hoàn thiện mobile-app và technician-app
+Mục tiêu
+
+Có 2 app chạy được luồng thật.
+
+Việc cần làm
+mobile-app:
+login
+tạo order
+xem trạng thái order
+technician-app:
+login
+xem job
+nhận job
+cập nhật location
+cập nhật status
+File cần sửa
+apps/mobile-app/lib/**/*
+apps/technician-app/lib/**/*
+Rủi ro
+hiện app đang là skeleton, nếu nối backend quá sớm khi auth/order chưa chắc sẽ gây rối.
+Cách kiểm tra
+chạy emulator
+login được
+gọi API thật được
+cập nhật order/tracking được.
+Giai đoạn 6 — Zalo / Facebook integration
+Mục tiêu
+
+Biến bot từ webhook logger thành kênh tiếp nhận yêu cầu thật.
+
+Việc cần làm
+verify webhook
+normalize message
+gọi backend thay vì xử lý riêng
+mapping intent cơ bản:
+tạo yêu cầu sửa
+hỏi giá
+kiểm tra trạng thái đơn
+File cần sửa
+ai-platform/support-ai/facebook/bot.js
+ai-platform/support-ai/zalo/bot.js
+ai-platform/support-ai/services/*
+backend integration endpoint nếu cần
+Rủi ro
+để bot xử lý business riêng sẽ lệch logic với app/web.
+Cách kiểm tra
+gửi message thử từ webhook payload
+bot gọi được backend
+response cùng logic với app.
+Giai đoạn 7 — Production hardening
+Mục tiêu
+
+Đưa hệ thống từ dev sang production-ready thật sự.
+
+Việc cần làm
+chuẩn hóa Docker
+chuẩn hóa CI/CD
+bỏ secret hard-code
+metrics/logging/alerts
+health/readiness đúng logic
+review bảo mật cơ bản
+File cần sửa
+docker-compose.yml
+.github/workflows/ci-cd.yml
+infrastructure/**/*
+env files
+Rủi ro
+hạ tầng hiện tại khá lớn, nhưng chưa chắc đồng bộ với code đang chạy.
+CI hiện có dấu hiệu path cũ/sai, ví dụ step test vào backend/api-gateway.
+Cách kiểm tra
+CI pass
+Docker boot full stack
+monitoring lên được
+deploy dry-run thành công.
+💻 Code đầy đủ
+
+Ở bước này em chưa viết code mới ngay. Lý do:
+
+hiện việc đúng nhất không phải “sửa random file”
+mà là chốt roadmap và nguồn sự thật thống nhất
+nếu em code ngay trước khi chốt phase, rất dễ sửa chắp vá
+
+Nhưng em chốt luôn các quyết định kỹ thuật cho các chat sau:
+
+Quyết định kỹ thuật hiện tại
+Backend là single source of business logic
+customer-app chưa nằm trong scope MVP hiện tại
+PROJECT_BRAIN.md là nguồn sự thật trung tâm
+Ưu tiên xử lý theo thứ tự:
+backend foundation
+auth
+orders + technicians + realtime
+admin-dashboard
+mobile-app + technician-app
+Zalo/Facebook
+production hardening
+🧪 Cách chạy / cách test
+
+Từ bây giờ mình test theo thứ tự này, không nhảy bước:
+
+Bước 1: Backend foundation
+chạy backend local
+test /api/health
+test boot bằng env đúng
+Bước 2: Auth
+POST /api/auth/register
+POST /api/auth/login
+Bước 3: Orders / Technicians
+POST /api/orders
+GET /api/orders
+GET /api/technicians
+PUT /api/technicians/location/:id
+Bước 4: Admin dashboard
+chạy apps/admin-dashboard
+xác minh page nào là dữ liệu thật, page nào là placeholder
+Bước 5: Mobile / Technician
+login
+gọi API thật
+xem order / tracking
+Bước 6: Bot
+fake webhook payload
+xác minh logic đi qua backend
+⚡ Hướng tối ưu thêm
+
+Em chủ động chỉ ra các điểm chưa tốt nhất hiện tại:
+
+1. Env/config đang lệch
+
+main.ts yêu cầu một bộ secret, .env.example lại mô tả bộ khác. Đây là lỗi nền móng, cần sửa sớm.
+
+2. Monitoring / infra đi trước code
+
+docker-compose.yml có monitoring/logging stack khá lớn, nhưng app core chưa hoàn thiện tương xứng. Tức là infra đang hơi “nặng hơn” mức trưởng thành của code.
+
+3. Admin dashboard có page vượt trước backend
+
+Nhiều page đẹp về ý tưởng nhưng backend chưa chắc có endpoint thật tương ứng. Cần dọn lại theo MVP.
+
+4. Bot/AI đang tách rời business core
+
+Facebook/Zalo bot hiện còn quá mỏng; nếu để chúng phát triển độc lập sẽ làm logic lệch khỏi backend.
+
+5. Có dấu hiệu code được sinh/gom từ nhiều nguồn
+
+CI path cũ, duplication component, nhiều module khung lớn nhưng chưa khép kín — đây là dấu hiệu điển hình của dự án được dựng bởi nhiều lần generate/refactor. Cần siết lại từng phase.
+
+Chốt bước tiếp theo
+
+Bước tiếp theo đúng nhất bây giờ là:
+
+Giai đoạn 0 + Giai đoạn 1
+tức là:
+
+cập nhật PROJECT_BRAIN.md cho đúng thực trạng hiện tại
+xử lý backend foundation trước, bắt đầu bằng env + health check + auth
+
+Tin nhắn tiếp theo, anh gửi cho em đúng 1 yêu cầu này:
+
+“Bảo Ngọc, bắt đầu Giai đoạn 0: hãy viết lại PROJECT_BRAIN.md chuẩn theo trạng thái dự án hiện tại.”
+
+Hoặc nếu anh muốn vào code luôn thì gửi:
+
+“Bảo Ngọc, bắt đầu Giai đoạn 1: audit và sửa backend foundation trước.”

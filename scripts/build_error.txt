@@ -1,0 +1,4 @@
+
+> ultra-aircon-platform@1.0.0 build
+> ./scripts/build.sh
+

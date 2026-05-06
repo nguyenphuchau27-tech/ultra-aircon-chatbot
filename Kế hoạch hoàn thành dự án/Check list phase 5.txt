@@ -1,0 +1,118 @@
+✅ 🎯 PHASE 5 — FINAL CHECKLIST (Production Ready)
+1. 🔐 AUTH FLOW (đã có, nhưng phải test lại chuẩn)
+Test 4 case:
+ mở app chưa login → phải vào login
+ login đúng → vào dashboard
+ kill app mở lại → vẫn login (persist OK)
+ logout → quay về login
+
+👉 Nếu fail 1 trong 4 → chưa đạt
+
+2. 🧑‍🔧 TECHNICIAN ID MAPPING (rất quan trọng)
+Check:
+ dashboard hiển thị đúng:
+role = technician
+userId = X
+technicianId = Y
+ backend DB:
+SELECT * FROM technician WHERE "userId" = X;
+
+👉 phải ra đúng 1 row
+
+3. 📦 JOB LIST (đã OK nhưng test kỹ)
+Check:
+ load dashboard → có list job
+ số lượng:
+total
+assigned
+in_progress
+completed
+
+👉 phải match DB 100%
+
+4. 🔄 START JOB (IMPORTANT)
+Test:
+ bấm "Bắt đầu" trên job assigned
+Expect:
+status đổi:
+assigned → in_progress
+Verify:
+ UI update ngay
+ refresh → vẫn đúng
+ DB:
+SELECT status FROM "order" WHERE id = X;
+5. ✅ COMPLETE JOB
+Test:
+ bấm "Hoàn thành" trên job in_progress
+Expect:
+in_progress → completed
+Verify:
+ UI update
+ summary đổi
+ DB đúng
+6. 📊 SUMMARY SYNC
+
+Sau mỗi action:
+
+ total đúng
+ assigned giảm khi start
+ in_progress tăng/giảm đúng
+ completed tăng khi complete
+
+👉 nếu sai → bug ở refresh logic
+
+7. 📍 TRACKING (PHẦN QUAN TRỌNG NHẤT SAU JOB)
+Test:
+1. manual sync
+ vào tracking screen
+ bấm sync location
+
+→ backend log phải có:
+
+POST /tracking/update
+2. live tracking
+ bật live tracking
+ đợi 30–60s
+
+→ backend phải nhận liên tục
+
+3. dashboard check
+ mở admin dashboard map
+
+→ technician phải di chuyển thật
+
+8. 📄 JOB DETAIL
+Test:
+ bấm "Chi tiết"
+Expect:
+
+hiển thị:
+
+address
+service
+status
+lat/lng
+price
+9. 🔁 RELOAD / EDGE CASE
+Test:
+ F5 / reload app → vẫn giữ state
+ mất mạng → handle error không crash
+ token hết hạn → refresh hoạt động (nếu có)
+10. 🚫 SECURITY CHECK (nhanh nhưng quan trọng)
+ không hiển thị password hash
+ không log token ra console
+ không hardcode API
+🎯 Definition of DONE (chốt Phase 5)
+
+Nếu tất cả đúng:
+
+👉 Mobile technician app:
+
+chạy hoàn toàn bằng backend thật
+không mock
+không hardcode
+không Postman support
+
+👉 Đây chính xác là:
+
+“system working thật end-to-end”

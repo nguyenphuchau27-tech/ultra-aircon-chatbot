@@ -1,0 +1,73 @@
+13. Tóm tắt ngắn gọn: file nào tạo mới, file nào nâng cấp
+Tạo mới
+project-brain.config.json
+Nâng cấp
+scripts/generate-project-brain.ts
+File được generate tự động
+PROJECT_BRAIN.md
+Không cần sửa
+package.json
+
+vì script brain:generate của anh đã đúng rồi.
+
+14. Cách kiểm tra nhanh sau khi làm xong
+
+Chạy:
+
+pnpm brain:generate
+
+Nếu không lỗi, mở PROJECT_BRAIN.md và check 3 thứ:
+
+Check 1
+
+Có dòng phase hiện tại không:
+
+- Current: PHASE 1 — BACKEND FOUNDATION
+Check 2
+
+Có roadmap không
+
+Check 3
+
+API total có khớp không:
+
+- Total APIs: 30
+
+API count 30 hiện tại đang khớp với bản anh đã generate trước đó.
+
+15. Hướng tối ưu thêm
+
+Sau khi bản này chạy ổn, bản nâng cấp tiếp theo nên là:
+
+tách knownIssuesByPhase
+tách doneItems
+tự sinh Generated At
+thêm decision log
+thêm filesToTouchThisPhase
+
+Nhưng hiện tại chưa cần làm ngay.
+Bản phase-aware này là đủ chuẩn để bước vào Phase 1.
+
+Bước tiếp theo đúng nhất bây giờ là: thay 2 file xong chạy pnpm brain:generate, rồi gửi cho em output mới để em kiểm tra trước khi mình vào audit backend foundation.
+
+PS D:\Dev\ultra-aircon-startup> pnpm brain:generate
+
+> ultra-aircon-platform@1.0.0 brain:generate D:\Dev\ultra-aircon-startup
+> pnpm exec ts-node --transpile-only scripts/generate-project-brain.ts
+
+✅ PROJECT_BRAIN generated: D:\Dev\ultra-aircon-startup\PROJECT_BRAIN.md
+🧠 Config loaded: D:\Dev\ultra-aircon-startup\project-brain.config.json
+📦 Controllers scanned: 10
+🚀 APIs found: 30
+📍 Current phase: PHASE 1 — BACKEND FOUNDATION
+➡️ Next phase: PHASE 2 — AUTH
+PS D:\Dev\ultra-aircon-startup> 
+Đã dừng suy nghĩ
+Câu trả lời nhanh
+?!
+
+Ổn rồi anh — phản ứng “?!” của anh là đúng 😄 vì đây là điểm chuyển trạng thái quan trọng của dự án.
+
+👉 Tóm lại ngắn gọn:
+
+Anh đã hoàn thành Phase 0 đúng chuẩn.

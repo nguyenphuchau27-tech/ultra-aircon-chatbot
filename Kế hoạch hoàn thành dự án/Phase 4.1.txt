@@ -1,0 +1,84 @@
+Anh đang phát triển project: Ultra Aircon Platform.
+
+📍 CURRENT PHASE:
+Phase 4 — Dọn và sync Admin Dashboard
+
+📍 MỤC TIÊU CUỐI:
+
+* build global_map.tsx realtime tracking
+* connect socket realtime
+* hiển thị technician di chuyển trên map
+* chỉ dùng API thật (không mock)
+
+---
+
+📍 TÌNH TRẠNG HIỆN TẠI (RẤT QUAN TRỌNG):
+
+Phase 4 đang bị BLOCK bởi backend runtime trong Docker.
+
+Backend đã:
+
+* build OK (dist/main.js tồn tại)
+* Dockerfile build OK
+* docker-compose chạy được postgres + redis
+
+Nhưng backend FAIL do:
+
+1. Database auth lỗi:
+   → password authentication failed for user "postgres"
+
+2. Redis connection lỗi:
+   → ECONNREFUSED
+
+3. Config validation lỗi:
+   → thiếu CORS_ORIGINS
+
+4. Backend chưa healthy:
+   → http://localhost:3001/api/health không chạy
+
+---
+
+📍 YÊU CẦU:
+
+KHÔNG bắt đầu lại từ đầu.
+
+Tiếp tục đúng chỗ đang làm:
+👉 Fix backend runtime trong docker-compose
+
+Mục tiêu:
+
+* backend start OK
+* connect được postgres
+* connect được redis
+* không còn config error
+* /api/health trả OK
+
+---
+
+📍 SAU KHI FIX XONG:
+
+Tiếp tục Phase 4:
+
+* build global_map.tsx
+* connect socket realtime
+* hiển thị technician trên map realtime
+
+---
+
+📍 NGUYÊN TẮC:
+
+* Production-ready
+* Không mock
+* Không làm demo
+* Phải tìm root cause, không fix tạm
+
+---
+
+Anh sẽ gửi:
+
+* docker-compose.yml
+* backend/.env.docker
+* backend/Dockerfile
+* log lỗi backend
+
+Hãy đọc kỹ và fix triệt để backend runtime trước.

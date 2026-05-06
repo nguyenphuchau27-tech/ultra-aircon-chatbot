@@ -1,0 +1,99 @@
+Dự án: Ultra Aircon Platform
+Yêu cầu cốt lõi: THẬT, SẠCH, CHUẨN PRODUCTION, KHÔNG PHÁ HỆ THỐNG, KHÔNG LẶP LẠI CÁC LỖI ĐÃ SỬA
+
+📍 CURRENT PHASE:
+👉 Phase 5 — Hoàn thiện Mobile / Technician app
+
+📍 BỐI CẢNH RẤT QUAN TRỌNG:
+- Phase 4 đã DONE thật, không được kéo scope quay lại dashboard trừ khi phát hiện bug blocking thật sự.
+- Backend là business core và single source of truth.
+- Admin Dashboard đã chốt:
+  + login flow thật
+  + auth guard sạch
+  + /global_map dùng data thật
+  + realtime technician movement thật trên map
+  + page ngoài MVP đã đưa về Coming Soon rõ ràng
+  + build production và start production đã pass
+- Chat mới phải đọc kỹ PROJECT_BRAIN.md trước khi làm việc.
+- Không được tự ý suy đoán trạng thái dự án nếu chưa bám đúng PROJECT_BRAIN.md và file thật.
+
+🎯 MỤC TIÊU PHASE 5:
+Hoàn thiện Mobile / Technician app theo đúng backend contract thật hiện có, không mock, không fake flow, không hardcode business logic ngoài backend.
+
+✅ YÊU CẦU LÀM VIỆC BẮT BUỘC:
+1. Đọc kỹ PROJECT_BRAIN.md trước.
+2. Bám đúng cấu trúc file thật của project.
+3. Khi sửa file phải ưu tiên viết lại file hoàn chỉnh để copy.
+4. Không trả lời kiểu lý thuyết chung chung.
+5. Không làm nửa vời, không vá tạm, không tạo giải pháp giả production.
+6. Mọi flow mobile phải bám API backend thật đã có.
+7. Không đặt business logic ở mobile app.
+8. Chỉ dùng mobile app như lớp UI + state + API client đúng contract backend.
+9. Nếu thấy backend contract chưa đủ cho mobile phase thì phải chỉ ra thật rõ:
+   - thiếu endpoint nào
+   - thiếu field nào
+   - thiếu quyền/ownership nào
+   - thiếu dev seed nào
+10. Không được kéo scope sang AI Platform, Bots, Ecosystem, Digital Twin, Universe-level features.
+11. Không được phá những gì Phase 4 đã chốt xong ở admin-dashboard nếu không có bug blocking thật.
+12. Nếu cần sửa code, phải nêu rõ:
+   - file nào cần sửa
+   - vì sao sửa
+   - code full hoàn chỉnh để copy
+   - cách chạy/test
+
+📌 PHẠM VI CHÍNH CỦA PHASE 5:
+Ưu tiên theo thứ tự này:
+
+A. Technician app foundation
+- đọc cấu trúc app mobile/technician hiện có
+- xác định entrypoint, routing, state management, API service
+- rà cấu trúc auth hiện tại của mobile
+
+B. Auth thật cho technician app
+- login technician bằng backend auth thật
+- lưu session/token đúng cách
+- guard route mobile đúng cách
+- logout đúng cách
+
+C. Technician job flow thật
+- technician xem danh sách job của mình
+- technician xem chi tiết job
+- technician chỉ thấy job thuộc quyền của mình
+- bám đúng ownership đã chuẩn hóa bằng technician.userId
+
+D. Technician tracking thật
+- technician update location thật lên backend
+- bám đúng endpoint/backend contract thật
+- không fake GPS flow nếu chưa cần
+- nếu cần mode giả lập dev thì phải tách rõ DEV ONLY
+
+E. Kiểm tra production mindset
+- không hardcode business logic
+- không bypass auth bừa bãi
+- không dùng mock data nếu backend đã có API thật
+- không tạo UI giả hoàn thiện nếu flow chưa thật
+
+📍 ĐIỀU KIỆN HOÀN THÀNH PHASE 5:
+Phase 5 chỉ được gọi là DONE khi:
+1. technician app login bằng backend auth thật
+2. technician app guard route sạch
+3. technician xem được job thật của mình
+4. technician xem được job detail thật
+5. technician update location thật lên backend
+6. không còn lệ thuộc mock data cho các flow chính
+7. build/chạy app ổn theo checklist test cuối phase
+
+📍 CÁCH LÀM VIỆC MONG MUỐN:
+- Luôn phân tích trước khi sửa
+- Luôn bám root cause
+- Luôn ưu tiên giải pháp production-ready
+- Nếu sửa file, hãy đưa full file hoàn chỉnh để copy
+- Không trả lời ngắn hời hợt
+- Không bỏ sót checklist cuối phase
+
+Bắt đầu bằng:
+1. đọc PROJECT_BRAIN.md
+2. đánh giá trạng thái thật hiện tại của Mobile / Technician app
+3. lập checklist Phase 5 theo đúng backend contract hiện có
+4. chỉ ra file nào cần đọc đầu tiên

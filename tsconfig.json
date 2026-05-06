@@ -1,0 +1,53 @@
+{
+  "compilerOptions": {
+    "types": ["node"],
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "incremental": true,
+    "baseUrl": ".",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@shared/*": ["./packages/shared/src/*"],
+      "@services/*": ["./services/*/src"],
+      "@ai/*": ["./ai-services/*/src"],
+      "@utils/*": ["./packages/utils/src/*"],
+      "@types/*": ["./packages/types/src/*"],
+      "@api/*": ["./packages/api/src/*"]
+    }
+  },
+  "references": [
+    { "path": "./apps/admin-dashboard/tsconfig.json" },
+    { "path": "./backend/tsconfig.json" },
+    { "path": "./packages/shared/tsconfig.json" }
+  ],
+  "include": [],
+  "exclude": ["node_modules", ".next", "dist", "build", "coverage"]
+}

@@ -1,0 +1,422 @@
+Dự án: Ultra Aircon Platform
+
+Anh muốn em tiếp tục đúng tiến trình, tuyệt đối bám source code thực tế hiện tại, không đoán mò, không mock nếu backend thật đã có, không phá phần đã chạy ổn ở Phase 4 và Phase 5.
+
+==================================================
+QUY TẮC BẮT BUỘC TRONG TOÀN BỘ PHIÊN LÀM VIỆC
+==================================================
+
+Trước mỗi lần trả lời, đề xuất sửa code, hướng dẫn test, hoặc kết luận DONE, em phải tự đối chiếu lại toàn bộ prompt Phase 5.5 này cùng PROJECT_BRAIN.md và project-brain.config.json.
+
+Không được trả lời theo trí nhớ.
+Không được đoán file.
+Không được tự suy luận đường dẫn.
+Không được bỏ qua checklist.
+Không được nhảy bước.
+Không được code trước khi audit.
+Không được kết luận DONE nếu chưa test thật.
+
+Mỗi câu trả lời phải tự đối chiếu với:
+1. Mục tiêu Phase 5.5
+2. Nguyên tắc bắt buộc
+3. Thứ tự thực hiện
+4. File/source thật đã được upload
+5. Checklist test thật
+6. PROJECT_BRAIN.md
+7. project-brain.config.json
+
+Nếu câu trả lời có sửa code, bắt buộc phải ghi rõ:
+- Đang ở bước nào
+- File chính xác cần sửa
+- Vị trí chính xác cần sửa
+- Vì sao sửa
+- Code hoàn chỉnh
+- Cách chạy thật
+- Cách test thật
+- Tác động đến phần đã chạy ổn
+
+Nếu chưa đọc đủ source hoặc chưa chắc file tồn tại, phải nói rõ “chưa đủ căn cứ” và yêu cầu đúng file cần thiết, không được đoán.
+
+==================================================
+CURRENT PHASE
+==================================================
+
+PHASE 5.5 — Customer App production core
+
+Phase 5 đã DONE production core:
+- Backend chạy thật
+- Admin dashboard chạy thật
+- Technician app chạy thật
+- Auth mobile chạy thật
+- Job list/job detail technician chạy thật
+- Job lifecycle assigned -> in_progress -> completed chạy thật
+- Live tracking/realtime movement chạy thật
+- Security response đã sạch, không lộ password/hash
+- Dev seed/test data đã có admin/customer/technician/order lifecycle
+
+==================================================
+MỤC TIÊU PHASE 5.5
+==================================================
+
+Hoàn thiện Customer App chạy thật theo chuẩn production core.
+
+Customer App là app của KHÁCH, khác Technician App.
+
+Customer App phải dùng backend thật để:
+1. Customer login
+2. Persist session / cold start
+3. Refresh token
+4. Logout
+5. Tạo order thật
+6. Xem danh sách order của chính customer
+7. Xem order detail thật
+8. Theo dõi status order khi admin assign technician và technician update trạng thái
+9. Không dùng mock
+10. Không gọi DB trực tiếp
+11. Không chứa business logic thay backend
+
+==================================================
+NGUYÊN TẮC BẮT BUỘC
+==================================================
+
+1. Backend là single source of truth.
+2. Không mock khi backend thật đã có API.
+3. Không tự đoán đường dẫn file.
+4. Trước khi sửa code phải audit cấu trúc thật của apps/customer-app.
+5. Nếu đưa đường dẫn file cần sửa, phải chắc chắn file đó tồn tại trong source.
+6. Không phá admin-dashboard.
+7. Không phá technician-app.
+8. Không phá backend auth/session/order/tracking đã chạy thật.
+9. Không đổi API contract nếu không có lý do production rõ ràng.
+10. Nếu sửa response contract phải sửa đúng DTO/serializer/mapper/service, không vá tạm UI.
+11. Mỗi bước phải test thật.
+12. Không kết luận DONE nếu chưa có bằng chứng test thật.
+13. Khi test phải nói rõ môi trường đang test.
+
+==================================================
+MÔI TRƯỜNG TEST BẮT BUỘC
+==================================================
+
+Backend:
+- Chạy production runtime:
+  cd backend
+  pnpm run build
+  pnpm run start
+- URL thật: http://localhost:3002/api
+
+Flutter Customer App:
+- Chạy từ đúng thư mục:
+  apps/customer-app
+- Android Emulator dùng base URL:
+  http://10.0.2.2:3002/api
+
+Admin Dashboard:
+- Dùng để verify assign technician và order status:
+  apps/admin-dashboard
+- Login admin thật:
+  admin@example.com / 12345678
+
+Test account:
+- Admin: admin@example.com / 12345678
+- Customer: test@example.com / 12345678
+- Technician: tech@example.com / 12345678
+
+==================================================
+THỨ TỰ THỰC HIỆN BẮT BUỘC
+==================================================
+
+BƯỚC 1 — AUDIT SOURCE TRƯỚC KHI SỬA
+
+Đọc kỹ:
+- apps/customer-app structure
+- customer app api config
+- customer app api service
+- customer login screen nếu có
+- customer home/dashboard nếu có
+- order create screen nếu có
+- order list/detail screen nếu có
+- backend auth controller/use-case
+- backend orders controller/service
+- backend users/customer contract
+- PROJECT_BRAIN.md
+- project-brain.config.json
+
+Sau audit phải báo lại:
+1. Customer app hiện có file nào thật
+2. Customer app đã làm được gì
+3. Customer app thiếu gì
+4. Backend API nào đã có sẵn để dùng
+5. Bug/risk hiện tại
+6. Kế hoạch sửa theo thứ tự ưu tiên
+
+Chưa được code nếu chưa audit xong.
+
+==================================================
+BƯỚC 2 — CUSTOMER AUTH FLOW
+==================================================
+
+Mục tiêu:
+- Customer login thật với backend
+- Chỉ role customer được vào Customer App
+- Access token / refresh token được lưu local
+- Auto attach Authorization header
+- Cold start còn session thì vào app
+- Refresh token hoạt động
+- Refresh fail thì clear session và quay về login
+- Logout xóa sạch session
+
+Không dùng account admin/technician để test customer app.
+
+Checklist test:
+1. Login customer thành công
+2. Login sai password báo lỗi rõ
+3. Login role technician/admin bị chặn
+4. Kill app mở lại vẫn giữ session
+5. Revoke auth_sessions trong DB -> app xử lý expired session đúng
+6. Logout -> quay về login, mở lại vẫn ở login
+
+==================================================
+BƯỚC 3 — CREATE ORDER FLOW
+==================================================
+
+Mục tiêu:
+Customer tạo order thật qua backend:
+
+POST /api/orders
+
+Yêu cầu:
+- Form tạo order tối thiểu:
+  serviceType
+  address
+  lat/lng nếu backend yêu cầu hoặc lấy từ location nếu đã có
+- customerId phải lấy từ session/user hiện tại, không hardcode sai
+- Không cho customer tạo order thay user khác
+- Loading/error/success rõ ràng
+- Sau khi tạo xong phải thấy order trong danh sách
+
+Checklist test:
+1. Customer login
+2. Tạo order mới
+3. Backend trả 201/200
+4. DB có order mới đúng customerId
+5. Status ban đầu đúng: pending
+6. Customer app refresh thấy order mới
+
+==================================================
+BƯỚC 4 — MY ORDERS LIST
+==================================================
+
+Mục tiêu:
+Customer xem danh sách order của chính mình:
+
+GET /api/orders/customer/:customerId
+
+Yêu cầu:
+- Không dùng /orders toàn hệ thống cho customer app nếu không cần
+- Không show order của customer khác
+- Hiển thị tối thiểu:
+  id
+  serviceType
+  address
+  status
+  technician nếu đã assign
+  createdAt
+- Loading / empty / error rõ ràng
+
+Checklist test:
+1. Customer A chỉ thấy order của Customer A
+2. Không thấy order của technician/admin
+3. Order pending/assigned/in_progress/completed hiển thị đúng
+
+==================================================
+BƯỚC 5 — ORDER DETAIL
+==================================================
+
+Mục tiêu:
+Customer mở order detail thật:
+
+GET /api/orders/:id
+
+Yêu cầu:
+- UI detail production, không raw JSON
+- Hiển thị:
+  serviceType
+  address
+  status
+  customer info
+  technician info nếu có
+  lat/lng nếu có
+  createdAt/updatedAt
+- Response không lộ password/hash
+
+Checklist test:
+1. Bấm order trong list
+2. Mở detail đúng order
+3. Không crash nếu technician null
+4. Không hiện password/passwordHash/refreshTokenHash
+
+==================================================
+BƯỚC 6 — STATUS SYNC END-TO-END
+==================================================
+
+Mục tiêu:
+Customer app thấy trạng thái thay đổi khi:
+- Admin assign technician
+- Technician bấm bắt đầu job
+- Technician bấm hoàn thành job
+
+Test thật:
+1. Customer tạo order pending
+2. Admin dashboard assign technician
+3. Customer app refresh thấy assigned
+4. Technician app bấm Start
+5. Customer app refresh thấy in_progress
+6. Technician app bấm Complete
+7. Customer app refresh thấy completed
+
+Nếu có realtime/socket cho customer thì dùng thật.
+Nếu chưa có, dùng refresh thủ công và ghi rõ deferred realtime customer notification phase sau.
+
+==================================================
+BƯỚC 7 — SECURITY RESPONSE
+==================================================
+
+Rà lại mọi response customer-facing:
+- login
+- my orders
+- order detail
+- technician nested info
+
+Không được có:
+- password
+- passwordHash
+- refreshTokenHash
+- token nội bộ
+
+Nếu leak phải sửa backend đúng tầng service/serializer/mapper/entity.
+
+==================================================
+BƯỚC 8 — FINAL TEST CHECKLIST PHASE 5.5
+==================================================
+
+A. Auth customer:
+- login
+- cold start
+- refresh
+- expired session
+- logout
+
+B. Create order:
+- create order thật
+- DB lưu đúng
+- status pending
+
+C. My orders:
+- list đúng customer
+- không lộ order user khác
+
+D. Detail:
+- mở detail
+- UI production
+- không raw JSON
+- không leak password/hash
+
+E. End-to-end:
+- customer tạo order
+- admin assign
+- technician start
+- technician complete
+- customer thấy status đúng
+
+F. Build/run:
+- backend production build/start pass
+- customer app chạy thật trên emulator
+- admin dashboard dùng thật để assign
+- technician app dùng thật để update status
+
+==================================================
+FORMAT TRẢ LỜI BẮT BUỘC
+==================================================
+
+Mỗi lần trả lời ưu tiên format:
+
+1. Phân tích
+2. Root cause
+3. File cần sửa
+4. Vị trí code cần sửa
+5. Code hoàn chỉnh để copy
+6. Cách chạy / cách test
+7. Kết luận tác động
+
+Nếu sửa nhiều file:
+- Chia từng file rõ ràng
+- Không cắt import
+- Không gửi code nửa chừng
+- Không yêu cầu sửa mơ hồ
+
+==================================================
+ĐIỀU CẤM
+==================================================
+
+- Không mock data
+- Không tự đoán file
+- Không nói đường dẫn chưa kiểm tra
+- Không sửa technician-app nếu không liên quan
+- Không sửa admin-dashboard nếu không cần
+- Không sửa backend contract nếu UI có thể bám contract thật
+- Không kết luận DONE nếu chưa test thật
+- Không nhảy sang Zalo/Facebook trong Phase 5.5
+- Không gọi Phase 6 khi Customer App chưa DONE
+
+==================================================
+ĐẦU RA CUỐI PHASE 5.5
+==================================================
+
+Khi hoàn tất phải trả ra:
+
+1. Phase 5.5 DONE hay CHƯA DONE
+2. Danh sách file đã sửa
+3. Checklist test manual cuối cùng
+4. Tài khoản test chuẩn
+5. Dev seed/customer order sample
+6. Nội dung cập nhật PROJECT_BRAIN.md / project-brain.config.json
+==================================================
+YÊU CẦU ĐỌC SOURCE ĐÃ UPLOAD
+==================================================
+
+Trước khi bắt đầu bất kỳ phân tích, kết luận hoặc sửa code nào, em phải đọc kỹ các file/source anh đã upload trong cuộc trò chuyện này, bao gồm:
+
+1. PROJECT_BRAIN.md
+2. project-brain.config.json
+3. Source backend liên quan auth / orders / users / entities
+4. Source apps/customer-app đã upload
+5. Source technician-app chỉ dùng làm reference, không sửa nếu không liên quan
+6. Source admin-dashboard chỉ dùng để verify flow, không sửa nếu không cần
+
+Không được nói “theo cấu trúc thường gặp”.
+Không được tự bịa đường dẫn.
+Không được yêu cầu file nếu file đó đã được upload và có thể đọc được.
+Nếu thiếu file thật sự, phải nêu rõ chính xác tên file còn thiếu và lý do cần file đó.
+
+==================================================
+BƯỚC BẮT ĐẦU CÔNG VIỆC
+==================================================
+
+Bắt buộc bắt đầu từ:
+
+BƯỚC 1 — AUDIT SOURCE TRƯỚC KHI SỬA
+
+Không được code ngay.
+Không được đề xuất sửa ngay.
+Không được tạo file mới ngay.
+
+Việc đầu tiên phải làm là đọc source thật đã upload và báo cáo audit theo format:
+
+1. Customer app hiện có file nào thật
+2. Customer app đã làm được gì
+3. Customer app thiếu gì
+4. Backend API nào đã có sẵn để dùng
+5. Bug/risk hiện tại
+6. Kế hoạch sửa theo thứ tự ưu tiên
+
+Chỉ sau khi audit xong mới được chuyển sang BƯỚC 2.

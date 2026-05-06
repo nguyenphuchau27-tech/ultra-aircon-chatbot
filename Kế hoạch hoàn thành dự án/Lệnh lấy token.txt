@@ -1,0 +1,56 @@
+Lấy toaken 
+
+localStorage
+
+Tọa độ:
+
+$token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJhZG1pbiIsInNlc3Npb25JZCI6IjYxZDlkYzI3LTQwN2YtNDIwMS04MDgzLWYwZjA0ZGQ3ODk2ZSIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3NzY1MjkyNTEsImV4cCI6MTc3NjUzMDE1MX0.aT6zqOBzWo8htGPC5t13LNPr25iohz8SIW9iQlOBYUk"
+
+$headers = @{
+  Authorization = "Bearer $token"
+}
+$body = @{
+  techId = 1
+  latitude = 10.7845
+  longitude = 106.7095
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Method POST `
+  -Uri "http://localhost:3002/api/tracking/update" `
+  -Headers $headers `
+  -ContentType "application/json" `
+  -Body $body
+Lần 2
+
+$body = @{
+  techId = 1
+  latitude = 10.855
+  longitude = 106.7110
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Method POST `
+  -Uri "http://localhost:3002/api/tracking/update" `
+  -Headers $headers `
+  -ContentType "application/json" `
+  -Body $body
+
+Lần 3
+
+$body = @{
+  techId = 1
+  latitude = 10.7855
+  longitude = 106.7105
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Method POST `
+  -Uri "http://localhost:3002/api/tracking/update" `
+  -Headers $headers `
+  -ContentType "application/json" `
+  -Body $body
+{
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJhZG1pbiIsInNlc3Npb25JZCI6IjYxZDlkYzI3LTQwN2YtNDIwMS04MDgzLWYwZjA0ZGQ3ODk2ZSIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3NzY1MjkyNTEsImV4cCI6MTc3NjUzMDE1MX0.aT6zqOBzWo8htGPC5t13LNPr25iohz8SIW9iQlOBYUk",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInNlc3Npb25JZCI6IjYxZDlkYzI3LTQwN2YtNDIwMS04MDgzLWYwZjA0ZGQ3ODk2ZSIsInR5cGUiOiJyZWZyZXNoIiwianRpIjoiMzUyM2E2MDgtMTFmNy00YjVhLWI2M2MtMzg4YmRiZmU2OWVkIiwiaWF0IjoxNzc2NTI5MjUxLCJleHAiOjE3NzcxMzQwNTF9.6w59n1kYPNF7jLk7_i477FYy6FZECiEvPD_1zG_lQL4"
+}
